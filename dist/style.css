@@ -255,3 +255,8 @@ body.present .narr b{font-size:18px}
 .lk{font-size:10px;letter-spacing:.2em;color:var(--gold);border:1px solid var(--gold);padding:1px 6px;border-radius:4px}
 #twin svg{min-height:220px}
 @media(max-width:700px){.tstats{grid-template-columns:repeat(2,1fr)}}
+.tdata span.collapsed,.tdata b.collapsed{color:var(--red)}.tdata span.partial{color:var(--org)}.tdata span.damaged{color:var(--yel)}.tdata span.standing{color:var(--teal)}
+.tdata tr[data-pf]{cursor:pointer}.tdata tr[data-pf]:hover,.tdata tr.on{background:var(--panel2)}.tdata tr.on td:first-child{box-shadow:inset 3px 0 var(--gold)}
+.sc{font-size:11px;padding:1px 6px;border-radius:10px;border:1px solid var(--line);white-space:nowrap}
+.sc.hi{border-color:var(--red);color:var(--red)}.sc.md{border-color:var(--org);color:var(--org)}.sc.lo{border-color:var(--yel);color:var(--yel)}
+#plans svg{min-height:240px}

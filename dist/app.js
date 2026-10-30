@@ -130,11 +130,24 @@ function planCtl(){
   const b=building();if(S.plan.f>b.floors)S.plan.f=0;
   return`<select id="pb" aria-label="Building">${sc.buildings.map(x=>`<option value="${x.id}"${x.id===b.id?' selected':''}>${esc(x.name)} · ${x.floors} fl</option>`).join('')}</select><span class="fl">${['All floors',...Array.from({length:b.floors},(_,i)=>'F'+(i+1))].map((t,i)=>`<button data-floor="${i}" class="${S.plan.f===i?'on':''}">${t}</button>`).join('')}</span><button id="ppng" class="btn ghost">Save PNG</button><button id="psvg" class="btn ghost">Save SVG</button>`;
 }
+const DMG={collapsed:'Collapsed',partial:'Partial collapse',damaged:'Damaged',standing:'Standing'};
+function plansData(b){
+  const st=S.step,pre=st>=3,seen=st>=4,live=st>=5,F=b.floors,units=pre?Math.max(2,Math.round(Math.max(b.w,b.h)/40))*2:null;
+  const ins=live?allInds().filter(i=>i.building===b.id):[];
+  const cond=f=>!seen?'<em>Awaiting baseline</em>':b.status==='collapsed'?'<span class="collapsed">Collapsed · half footprint</span>':b.status==='partial'?(f>F/2?'<span class="partial">Partial collapse</span>':'<span class="standing">Intact</span>'):b.status==='damaged'?'<span class="damaged">Damaged</span>':'<span class="standing">Intact</span>';
+  const rows=Array.from({length:F},(_,k)=>F-k).map(f=>{
+    const v=ins.filter(i=>(i.floor||1)===f),max=Math.max(0,...v.map(i=>i.strength));
+    const pri=!live?'–':max>=.7?'<b class="collapsed">High</b>':v.length?'<span class="partial">Medium</span>':'<em>Low</em>';
+    return`<tr data-pf="${f}" class="${S.plan.f===f?'on':''}"><td><b>F${f}</b></td><td>${units??'–'}</td><td>${cond(f)}</td><td>${live?(v.length?v.map(i=>`<span class="sc ${D.lvl(i.strength)}" title="${esc(i.note)}">${SRC[i.source]} ${Math.round(i.strength*100)}%</span>`).join(' '):'0'):'–'}</td><td>${pri}</td></tr>`;
+  }).join('');
+  const stats=[[F,'Floors'],[units?units*F:'–','Units (pre-event plans)'],[seen?DMG[b.status]||esc(b.status):'–','Damage'],[live?ins.length:'–','Indications'],...(S.p2.score?[[esc(b.score),'P2 · Survivability score']]:[])];
+  return`<div class="tdata"><div class="tstats" style="grid-template-columns:repeat(${stats.length},1fr)">${stats.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div><table><thead><tr><th>Floor</th><th>Units</th><th>Condition</th><th>Indications</th><th>Search priority</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
 function renderPlans(){
-  const el=$('#plans');
-  if(S.step<3){el.innerHTML=locked('Building plans are preloaded with Layer 2 at step 3 · Preload data');return}
-  const b=building(),show=S.layers.l4&&S.step>=5;
-  el.innerHTML=`<div class="cap"><b>Layered building plans · ${esc(b.name)}</b> · street plan at the base, each floor stacked above it · ${show?'sensor indications placed by floor':'indications appear with Layer 4 (step 5)'}</div>`+D.plans(sc,L,b,show?inds():[],S.plan.f);
+  const el=$('#plans'),b=building();
+  if(S.step<3){el.innerHTML=`<div class="cap"><b>Layered building plans · ${esc(b.name)}</b> · <span class="lk">LOCKED</span> plans preload with Layer 2 at step 3 · Preload data</div>`+plansData(b);return}
+  const show=S.layers.l4&&S.step>=5;
+  el.innerHTML=`<div class="cap"><b>Layered building plans · ${esc(b.name)}</b> · street plan at the base, each floor stacked above it · ${show?'sensor indications placed by floor':'indications appear with Layer 4 (step 5)'}</div>`+D.plans(sc,L,b,show?inds():[],S.plan.f)+plansData(b);
 }
 function savePlan(png){
   const s=$('#plans svg');if(!s)return;
@@ -146,7 +159,6 @@ function savePlan(png){
   img.src=url;
 }
 
-const DMG={collapsed:'Collapsed',partial:'Partial collapse',damaged:'Damaged',standing:'Standing'};
 function twinData(){
   const st=S.step,passes=[0,0,0,0,1,3,6][st],base=[0,0,0,0,35,75,100][st],all=allInds();
   const stats=[[passes,'Drone passes'],[passes*148,'Aerial photos'],[(passes*.8).toFixed(1)+'M','3D points'],[sc.steps[st].area,'Area imaged']];
@@ -218,6 +230,10 @@ $('#pop').addEventListener('click',e=>{
   if(e.target.closest('[data-close]')){S.sel=null;pop();renderRail()}
   const b=e.target.closest('[data-plan]');
   if(b){S.mode='plans';S.plan={b:b.dataset.plan,f:+b.dataset.floor};S.sel=null;renderEvent();persist()}
+});
+$('#plans').addEventListener('click',e=>{
+  const r=e.target.closest('[data-pf]');
+  if(r){const f=+r.dataset.pf;S.plan.f=S.plan.f===f?0:f;renderEvent();persist()}
 });
 $('#twin').addEventListener('click',e=>{
   const r=e.target.closest('[data-plan]');
