@@ -328,3 +328,10 @@ body.holo{--gold:#39f59a;--gold2:#8dffc4;--line:#1d4a36;--panel:#0b1712;--panel2
 .nph.sel rect{fill:var(--gold)}
 .nph .pl{fill:#e9f6ff;font-size:11px;font-weight:800;paint-order:stroke;stroke:#000;stroke-width:3}
 .pop a.btn{display:block;text-align:center;text-decoration:none;width:auto;margin-top:4px;padding:5px}
+
+/* Social media feed: official and press posts, linked out. */
+.soc{list-style:none;padding:0;margin:0}
+.soc li{border-left:2px solid var(--line);padding:2px 0 6px 8px;margin:4px 0;font-size:12px}
+.soc small{display:block;color:var(--mute);font-size:11px}
+.soc b,.soc span{display:block}
+.soc a{color:var(--gold2);font-size:11px}

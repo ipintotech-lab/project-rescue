@@ -254,6 +254,8 @@ function renderRail(){
   h+=`<h3>Sources</h3><div class="chips">${Object.entries(SRC).map(([k,c])=>`<button data-src="${k}" class="${S.src.has(k)?'on':''}" title="${SRCN[k]}">${c}</button>`).join('')}</div>`;
   if(S.role==='team'&&st>=6)h+=`<h3>Field report · Task Force A</h3><input id="rtext" placeholder="e.g. Voices under the stairwell" maxlength="80" value="${esc(S.rtext)}"><p class="hint">Then click inside your work area on the map.</p>`;
   h+=`<h3>Indications <em>${st>=5?v.length:0}</em></h3>`+(st<5||!S.layers.l4?`<p class="hint">${st<5?'Sensor indications arrive once Starlink connects (step 5).':'Layer 4 is hidden.'}</p>`:`<ol class="inds">${[...v].sort((a,b)=>b.strength-a.strength).map(i=>`<li data-sel="${i.id}" class="${D.lvl(i.strength)} ${status(i)}${S.sel===i.id?' on':''}"><i>${SRC[i.source]}</i><span><b>${esc(i.short||i.note)}</b><small>${CLS[EV[i.source]]} · ${esc(i.time)} · ${Math.round(i.strength*100)}% · ${esc(team(i.team)?.name)}</small></span></li>`).join('')}</ol>`);
+  const so=sc.social;
+  if(so&&st>=so.step)h+=`<h3>${esc(so.title)} <em>${so.items.length}</em></h3><ol class="soc">${so.items.map(i=>`<li><small>${esc(i.t)} · ${esc(i.net)} · ${i.kind==='press'?'Press':'Official'}</small><b>${esc(i.who)}</b><span>${esc(i.text)}</span><a href="${esc(i.url)}" target="_blank" rel="noopener">${i.via?'Via '+esc(i.via):'Open post'} ↗</a></li>`).join('')}</ol><p class="hint">${esc(so.note)}</p>`;
   $('#rail').innerHTML=h;
 }
 
