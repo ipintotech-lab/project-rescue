@@ -82,6 +82,7 @@ function renderEvent(){
   $('#stage').hidden=S.mode!=='map';$('#plans').hidden=S.mode!=='plans';$('#twin').hidden=S.mode!=='twin';
   $('#planctl').innerHTML=S.mode==='plans'&&S.step>=3?planCtl():'';
   $('#live').textContent=S.step>=5?`● LIVE · imagery refresh #${1+S.refresh}`:'';
+  $('#mapdata').hidden=S.mode!=='map';if(S.mode==='map')$('#mapdata').innerHTML=mapData();
   ({map:renderMap,plans:renderPlans,twin:renderTwin})[S.mode]();
   renderRail();
 }
@@ -129,6 +130,17 @@ function pop(){
 function planCtl(){
   const b=building();if(S.plan.f>b.floors)S.plan.f=0;
   return`<select id="pb" aria-label="Building">${sc.buildings.map(x=>`<option value="${x.id}"${x.id===b.id?' selected':''}>${esc(x.name)} · ${x.floors} fl</option>`).join('')}</select><span class="fl">${['All floors',...Array.from({length:b.floors},(_,i)=>'F'+(i+1))].map((t,i)=>`<button data-floor="${i}" class="${S.plan.f===i?'on':''}">${t}</button>`).join('')}</span><button id="ppng" class="btn ghost">Save PNG</button><button id="psvg" class="btn ghost">Save SVG</button>`;
+}
+function mapData(){
+  const st=S.step,seen=st>=4,v=allInds(),on=teams(),open=sc.conflicts.filter(c=>c.step<=st&&S.resolved[c.id]==null).length;
+  const hit=b=>seen&&b.status!=='standing',inArea=a=>sc.buildings.filter(b=>{const x=b.x+b.w/2,y=b.y+b.h/2;return x>=a[0]&&x<=a[0]+a[2]&&y>=a[1]&&y<=a[1]+a[3]});
+  const stats=[[seen?sc.buildings.length:'–','Structures mapped'],[seen?sc.buildings.filter(hit).length:'–','Collapsed or damaged'],[st>=5?v.filter(i=>i.strength>=.7).length:'–','Strong indications ≥70%'],[on.length,'Teams on the map'],[open,'Open conflicts']];
+  const rows=sc.teams.map(t=>{
+    const area=t.area?inArea(t.area):null,n=v.filter(i=>i.team===t.id).length;
+    const stt=st<t.joins?'<em>Not joined</em>':t.pending&&!S.approved?'<span class="partial">Pending approval</span>':'<em class="ok">On the map</em>';
+    return`<tr><td><b style="color:${esc(t.color)}">■</b> <b>${esc(t.name)}</b>${S.role==='team'&&t.id===MY?' <span class="sc">you</span>':''}</td><td>${esc(t.type)}</td><td>${area?area.map(b=>`<span class="${hit(b)?b.status:''}">${esc(b.name)}</span>`).join(', ')||'Open ground':'Whole event'}</td><td>${st>=5?n:'–'}</td><td>${stt}</td></tr>`;
+  }).join('');
+  return`<div class="tdata"><div class="tstats" style="grid-template-columns:repeat(${stats.length},1fr)">${stats.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div><table><thead><tr><th>Team</th><th>Type</th><th>Work area</th><th>Indications</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 const DMG={collapsed:'Collapsed',partial:'Partial collapse',damaged:'Damaged',standing:'Standing'};
 function plansData(b){

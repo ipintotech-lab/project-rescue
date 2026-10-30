@@ -260,3 +260,7 @@ body.present .narr b{font-size:18px}
 .sc{font-size:11px;padding:1px 6px;border-radius:10px;border:1px solid var(--line);white-space:nowrap}
 .sc.hi{border-color:var(--red);color:var(--red)}.sc.md{border-color:var(--org);color:var(--org)}.sc.lo{border-color:var(--yel);color:var(--yel)}
 #plans svg{min-height:240px}
+.stagewrap{overflow:auto}
+.mapdata{border:1px solid var(--line);border-radius:10px;background:#0f0d0a;flex:none}
+.mapdata .tdata span.collapsed{color:var(--red)}.mapdata .tdata span.partial{color:var(--org)}.mapdata .tdata span.damaged{color:var(--yel)}
+.stagewrap>.stage{flex:none}
