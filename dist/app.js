@@ -27,7 +27,7 @@ function build(){L=D.layout(sc);art={before:D.aerial(sc,L,false,sc.images?.befor
 build();
 
 const defaults=i=>({l1:i>=3,l2:i===3,l3:i>=4,l4:i>=5,l5:i>=6});
-const S={view:'national',step:0,role:'coord',phase:'all',resolved:{},approved:false,added:[],log:[],plan:{b:'cedar',f:0},...get(KEY),mode:'map',slider:50,src:new Set(Object.keys(SRC)),p2:{score:false,imsi:false,bio:false},refresh:0,sel:null,rtext:'',present:false};
+const S={view:'national',step:0,role:'coord',phase:'all',resolved:{},approved:false,added:[],log:[],plan:{b:'b1',f:0},...get(KEY),mode:'map',slider:50,src:new Set(Object.keys(SRC)),p2:{score:false,imsi:false,bio:false},refresh:0,sel:null,rtext:'',present:false};
 S.step=Math.max(0,Math.min(sc.steps.length-1,S.step|0));
 S.layers=defaults(S.step);
 const persist=()=>put(KEY,{view:S.view,step:S.step,role:S.role,phase:S.phase,resolved:S.resolved,approved:S.approved,added:S.added,log:S.log,plan:S.plan});
@@ -109,6 +109,7 @@ function renderMap(){
   if(Ly.l4&&st>=5){const v=inds();h+=`<g class="heat">${D.heat(v.filter(i=>status(i)==='active'||status(i)==='priority'))}</g>`+v.map(pin).join('')}
   if(st>=6)h+=sc.conflicts.filter(c=>c.step<=st&&S.resolved[c.id]==null).map(c=>`<g class="cf" data-cf="${c.id}" transform="translate(${c.x} ${c.y})"><title>${esc(c.title)}</title><circle r="13"/><text y="6">!</text></g>`).join('');
   h+=D.p2(sc,S.p2);
+  if(sc.osm&&st>=3&&(Ly.l1||Ly.l2||Ly.l3))h+=`<text class="attr" x="994" y="592" text-anchor="end">${esc(sc.osm.attribution)}</text>`;
   if(both)h+=`<text class="cmp" x="14" y="26">LAYER 1 · PRE-DISASTER</text><text class="cmp" x="986" y="26" text-anchor="end">LAYER 3 · DRONE ${st>=5?'· LIVE':'T+18'}</text><g id="divider"><line x1="0" x2="0" y1="0" y2="600"/><circle cy="300" r="15"/><text y="305" text-anchor="middle">⇔</text></g>`;
   $('#map').innerHTML=h;
   $('#slider').hidden=!both;
@@ -184,7 +185,7 @@ function twinData(){
 function renderTwin(){
   const el=$('#twin');
   if(!S.layers.l5){el.innerHTML=`<div class="cap"><b>Layer 5 · Digital twin</b> · <span class="lk">LOCKED</span> ${S.step<6?'opens at step 6 · Teams join · model builds as drone passes come in':'turn on Layer 5 to show the 3D model'}</div>`+twinData();return}
-  const b=sc.buildings.find(b=>b.id==='cedar');
+  const b=sc.buildings.find(b=>sc.indications.some(i=>i.twin&&i.building===b.id));
   el.innerHTML=`<div class="cap"><b>Layer 5 · Digital twin${b?' · '+esc(b.name):''}</b> · rebuilt from drone passes · sensor indications placed in 3D</div><svg viewBox="0 -10 1000 610">${D.twin(inds())}</svg>`+twinData();
 }
 

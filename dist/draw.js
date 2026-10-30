@@ -8,6 +8,14 @@ const overlaps=(a,b,m)=>a.x-m<b.x+b.w&&b.x<a.x+a.w+m&&a.y-m<b.y+b.h&&b.y<a.y+a.h
 const roadBox=d=>({x:Math.min(d.x1,d.x2)-d.w/2,y:Math.min(d.y1,d.y2)-d.w/2,w:Math.abs(d.x2-d.x1)+d.w,h:Math.abs(d.y2-d.y1)+d.w});
 const seg=(d,w,c,dash='')=>`<line x1="${d.x1}" y1="${d.y1}" x2="${d.x2}" y2="${d.y2}" stroke="${c}" stroke-width="${w}"${dash&&` stroke-dasharray="${dash}"`}/>`;
 const rect=(b,attrs)=>`<rect x="${f1(b.x)}" y="${f1(b.y)}" width="${f1(b.w)}" height="${f1(b.h)}" ${attrs}/>`;
+// Real-map geometry (sc.osm): polygons and polylines as [[x,y],...].
+const pg=(pts,attrs)=>`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" ${attrs}/>`;
+const pl=(pts,w,c,dash='',attrs='')=>`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"${dash&&` stroke-dasharray="${dash}"`}${attrs}/>`;
+const shape=(b,attrs)=>b.pts?pg(b.pts,attrs):rect(b,attrs);
+const box=pts=>{const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),x=Math.min(...xs),y=Math.min(...ys);return{x,y,w:Math.max(...xs)-x,h:Math.max(...ys)-y}};
+const inside=(pts,x,y)=>{let c=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const[x1,y1]=pts[i],[x2,y2]=pts[j];if((y1>y)!==(y2>y)&&x<x1+(y-y1)*(x2-x1)/(y2-y1))c=!c}return c};
+const segDist=(x,y,[x1,y1],[x2,y2])=>{const dx=x2-x1,dy=y2-y1,t=Math.max(0,Math.min(1,((x-x1)*dx+(y-y1)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(x-x1-t*dx,y-y1-t*dy)};
+const nearLine=(pts,x,y,d)=>pts.slice(1).some((p,i)=>segDist(x,y,pts[i],p)<d);
 const shade=(h,k)=>'#'+[1,3,5].map(i=>Math.min(255,Math.round(parseInt(h.slice(i,i+2),16)*k)).toString(16).padStart(2,'0')).join('');
 export const lvl=s=>s>=.7?'hi':s>=.45?'md':'lo';
 const LVL={hi:'#ff4d3d',md:'#ffa53a',lo:'#f3d65c'};
@@ -23,6 +31,15 @@ export const defs=`<defs>
 // House lots and trees, generated once so the before and after images line up.
 export function layout(sc){
   const r=rng(11),lots=[],trees=[],roads=sc.roads.map(roadBox);
+  if(sc.osm){
+    for(const l of sc.osm.lots)lots.push({...box(l.pts),pts:l.pts,g:l.g,roof:pick(r,ROOFS)});
+    const wet=sc.osm.water.map(w=>w.pts);
+    for(let i=0;i<900;i++){
+      const t={x:r()*1000,y:r()*600,w:1,h:1,s:3+r()*5};
+      if(!sc.osm.streets.some(d=>nearLine(d.pts,t.x,t.y,d.w/2+t.s))&&!wet.some(w=>inside(w,t.x,t.y))&&![...lots,...sc.buildings].some(b=>overlaps(t,b,t.s)))trees.push(t);
+    }
+    return{lots,trees};
+  }
   const blocked=[...roads.map(b=>[b,7]),...sc.buildings.map(b=>[b,14])];
   for(let y=12;y<588;y+=34)for(let x=12;x<988;x+=36){
     const h={x:x+r()*5,y:y+r()*4,w:17+r()*7,h:12+r()*6,roof:pick(r,ROOFS),pool:r()<.3,hit:r()};
@@ -55,9 +72,18 @@ export function aerial(sc,L,after,img){
   const g=rng(2),r=rng(after?5:3),e=sc.site.epicenter,o=['<rect width="1000" height="600" fill="#5a6049"/>'];
   for(let i=0;i<70;i++)o.push(`<circle cx="${f1(g()*1000)}" cy="${f1(g()*600)}" r="${f1(20+g()*70)}" fill="${g()<.5?'#666c52':'#4e5540'}" opacity=".45"/>`);
   for(const d of sc.roads)o.push(seg(d,d.w+7,'#a29d8f'),seg(d,d.w,'#3a3b3d'),d.w>=20?seg(d,1.2,'#d9c25a','12 10'):'');
+  if(sc.osm){
+    for(const z of sc.osm.green)o.push(pg(z.pts,`fill="${z.k==='beach'?'#cdb98a':'#4f6b3a'}"`));
+    for(const z of sc.osm.water)o.push(pg(z.pts,'fill="#2f5f73"'));
+    for(const d of sc.osm.streets)o.push(pl(d.pts,d.w+7,'#a29d8f'));
+    for(const d of sc.osm.streets)o.push(pl(d.pts,d.w,'#3a3b3d'),d.w>=20?pl(d.pts,1.2,'#d9c25a','12 10'):'');
+    for(const p of sc.osm.pools)o.push(pg(p,`fill="${after?'#7d9c9c':'#43b4d4'}"`));
+  }
   for(const h of L.lots){
-    if(after&&h.hit<.24-Math.hypot(h.x-e.x,h.y-e.y)/2400){o.push(rubble(h,r,9,false));continue}
-    o.push(rect({...h,x:h.x+2.5,y:h.y+2.5},'fill="#0006"'),rect(h,`fill="${h.roof}"`),`<line x1="${f1(h.x+2)}" y1="${f1(h.y+h.h/2)}" x2="${f1(h.x+h.w-2)}" y2="${f1(h.y+h.h/2)}" stroke="#0003"/>`);
+    if(after&&(h.g!=null?h.g===3:h.hit<.24-Math.hypot(h.x-e.x,h.y-e.y)/2400)){o.push(rubble(h,r,Math.max(9,Math.round(h.w*h.h/60)),false));continue}
+    o.push(shape(h,'fill="#0006" transform="translate(2.5 2.5)"'),shape(h,`fill="${h.roof}"`));
+    if(!h.pts)o.push(`<line x1="${f1(h.x+2)}" y1="${f1(h.y+h.h/2)}" x2="${f1(h.x+h.w-2)}" y2="${f1(h.y+h.h/2)}" stroke="#0003"/>`);
+    if(after&&h.g===2)o.push(cracks(h,r));
     if(h.pool)o.push(rect({x:h.x+2,y:h.y+h.h+3,w:h.w*.55,h:5},`rx="2" fill="${after?'#7d9c9c':'#43b4d4'}"`));
   }
   for(const t of L.trees)o.push(`<circle cx="${f1(t.x+1)}" cy="${f1(t.y+1)}" r="${f1(t.s)}" fill="#203519"/><circle cx="${f1(t.x)}" cy="${f1(t.y)}" r="${f1(t.s*.6)}" fill="#3b5932"/>`);
@@ -65,7 +91,7 @@ export function aerial(sc,L,after,img){
     const s=after?b.status:'standing';
     if(s==='collapsed'){o.push(rubble(b,r,Math.round(b.w*b.h/45),true));continue}
     const q=rng(b.x*31+b.y);
-    o.push(rect({...b,x:b.x+6,y:b.y+6},'fill="#0007"'),rect(b,`fill="${b.roof||'#a9acae'}" stroke="#d6d6d0" stroke-width="2"`));
+    o.push(shape(b,'fill="#0007" transform="translate(6 6)"'),shape(b,`fill="${b.roof||'#a9acae'}" stroke="#d6d6d0" stroke-width="2"`));
     for(let i=0;i<5;i++)o.push(rect({x:b.x+8+q()*(b.w-26),y:b.y+8+q()*(b.h-24),w:10,h:8},'fill="#d5d7d6" stroke="#6d6f70" stroke-width=".6"'));
     if(s==='partial')o.push(rubble({x:b.x+b.w*.5,y:b.y,w:b.w*.5,h:b.h},r,Math.round(b.w*b.h/90),true));
     if(s==='partial'||s==='damaged')o.push(cracks(b,r));
@@ -84,8 +110,17 @@ export function gis(sc,L){
     o.push(seg(sh(k),1.6,'#4cc3ff','7 4'),seg(sh(-k),1.4,'#ff9f43','2 5'),seg(d,2,'#ffd84a'));
     o.push(v?`<text class="gl" transform="translate(${d.x1-k-4} 590) rotate(-90)">${esc(d.name)}</text>`:`<text class="gl" x="8" y="${d.y1-k-4}">${esc(d.name)}</text>`);
   }
-  for(const h of L.lots)o.push(rect(h,'fill="none" stroke="#5ee0e6" stroke-width=".7" opacity=".5"'));
-  for(const b of sc.buildings)o.push(rect(b,'fill="#5ee0e61f" stroke="#5ee0e6" stroke-width="1.6"'),`<text class="gl" x="${b.x+4}" y="${b.y+14}">${esc(b.name)} · ${b.floors} fl</text>`);
+  if(sc.osm){
+    const named=new Map();
+    for(const d of sc.osm.streets){
+      o.push(pl(d.pts,1.6,'#4cc3ff','7 4',' transform="translate(4 4)"'),pl(d.pts,1.4,'#ff9f43','2 5',' transform="translate(-4 -4)"'),pl(d.pts,2,'#ffd84a'));
+      // Label each street once, on its longest on-screen segment.
+      d.pts.slice(1).forEach((q,i)=>{const p=d.pts[i],m=[(p[0]+q[0])/2,(p[1]+q[1])/2],n=Math.hypot(q[0]-p[0],q[1]-p[1]);if(d.name&&m[0]>40&&m[0]<960&&m[1]>20&&m[1]<580&&n>(named.get(d.name)?.n||0))named.set(d.name,{p,q,m,n})});
+    }
+    for(const[name,{p,q,m}]of named){let a=Math.atan2(q[1]-p[1],q[0]-p[0])*180/Math.PI;if(a>90)a-=180;if(a<-90)a+=180;o.push(`<text class="gl" text-anchor="middle" transform="translate(${f1(m[0])} ${f1(m[1])}) rotate(${f1(a)}) translate(0 -9)">${esc(name)}</text>`)}
+  }
+  for(const h of L.lots)o.push(shape(h,'fill="none" stroke="#5ee0e6" stroke-width=".7" opacity=".5"'));
+  for(const b of sc.buildings)o.push(shape(b,'fill="#5ee0e61f" stroke="#5ee0e6" stroke-width="1.6"'),`<text class="gl" x="${b.x+4}" y="${b.y+14}">${esc(b.name)} · ${b.floors} fl</text>`);
   return o.join('');
 }
 
@@ -112,7 +147,14 @@ export function usMap(sc,{phase,step}){
   for(const z of sc.hazards){const[x,y]=PJ(z.lon,z.lat);o.push(`<ellipse cx="${x}" cy="${y}" rx="${z.rx}" ry="${z.ry}" transform="rotate(${z.rot||0} ${x} ${y})" fill="${z.color}" fill-opacity=".13" stroke="${z.color}" stroke-opacity=".55" stroke-dasharray="4 4"/>`);if(z.label)o.push(`<text class="hz" x="${f1(x+(z.lx||0))}" y="${f1(y+(z.ly||0))}" fill="${z.color}" text-anchor="middle">${esc(z.label)}</text>`)}
   for(const s of sc.stations){const[x,y]=PJ(s.lon,s.lat),dim=phase!=='all'&&s.phase!==phase;o.push(`<g class="st${dim?' dim':''}"><circle cx="${x}" cy="${y}" r="23" class="ring"/><circle cx="${x}" cy="${y}" r="${2.5+s.units}" class="dot"/><title>${esc(s.id)} · ${esc(s.city)} · ${s.units} unit${s.units>1?'s':''} · ${esc(s.phase)}</title></g>`)}
   for(const c of sc.c2){const[x,y]=PJ(c.lon,c.lat);o.push(`<g class="c2"><rect x="${x-6}" y="${y-6}" width="12" height="12" transform="rotate(45 ${x} ${y})"/><text x="${x+11}" y="${y+4}">${esc(c.name)}</text></g>`)}
-  if(step>=1){const[x,y]=PJ(sc.epicenter.lon,sc.epicenter.lat);o.push(`<g class="epi"><circle cx="${x}" cy="${y}" r="8" class="p1"/><circle cx="${x}" cy="${y}" r="8" class="p2"/><circle cx="${x}" cy="${y}" r="5" class="core"/><line x1="${x}" y1="${y}" x2="${x+70}" y2="${y+70}"/><text x="${x+74}" y="${y+74}">${esc(sc.epicenter.label)}</text><text x="${x+74}" y="${y+90}" class="sub">${esc(sc.response.text)}</text></g>`)}
+  if(step>=1){
+    // An event outside the lower 48 sits on the frame edge, with the deployment leg from the responding station.
+    const[ex,ey]=PJ(sc.epicenter.lon,sc.epicenter.lat),off=ex<0||ex>900||ey<0||ey>500;
+    const x=off?Math.min(880,Math.max(20,ex)):ex,y=off?Math.min(480,Math.max(20,ey)):ey,s=off&&sc.stations.find(s=>s.id===sc.response.station);
+    if(s){const[sx,sy]=PJ(s.lon,s.lat);o.push(`<path d="M${sx} ${sy}Q${f1((sx+x)/2)} ${f1(Math.min(sy,y)-70)} ${x} ${y}" class="leg"/>`)}
+    const[tx,ty]=off?[x-10,y-120]:[x+74,y+74],a=off?' text-anchor="end"':'';
+    o.push(`<g class="epi"><circle cx="${x}" cy="${y}" r="8" class="p1"/><circle cx="${x}" cy="${y}" r="8" class="p2"/><circle cx="${x}" cy="${y}" r="5" class="core"/><line x1="${x}" y1="${y}" x2="${off?x-4:x+70}" y2="${off?y-112:y+70}"/><text x="${tx}" y="${ty}"${a}>${esc(sc.epicenter.label)}${off?' ↘':''}</text><text x="${tx}" y="${ty+16}" class="sub"${a}>${esc(sc.response.text)}</text></g>`);
+  }
   return o.join('');
 }
 
@@ -134,7 +176,7 @@ export function twin(inds){
 
 // Layered (exploded) view: the street and neighbouring footprints at the bottom, each floor plan of one building stacked above.
 export function plans(sc,L,b,inds,focus){
-  const pad=100,W={x:b.x-pad,y:b.y-pad,w:b.w+pad*2,h:b.h+pad*2},u=10,X=W.w/u,Y=W.h/u,F=b.floors,gap=Math.max(3,(b.w+b.h)/u*.14),top=[];
+  const pad=(b.w+b.h)*.35,W={x:b.x-pad,y:b.y-pad,w:b.w+pad*2,h:b.h+pad*2},u=(b.w+b.h)/29,X=W.w/u,Y=W.h/u,F=b.floors,gap=Math.max(3,(b.w+b.h)/u*.14),top=[];
   const s=20,cx=0,cy=0;
   const Q=(x,y,z)=>[f1(cx+(x-y)*s*.866),f1(cy+(x+y)*s*.5-z*s*.95)],P=(x,y,z)=>Q(x,y,z).join(',');
   const loc=m=>({x:(m.x-W.x)/u,y:(m.y-W.y)/u,w:m.w/u,h:m.h/u});
@@ -146,9 +188,20 @@ export function plans(sc,L,b,inds,focus){
   o.push(quad({x:0,y:0,w:X,h:Y},0,'fill="#3d4234" stroke="#6b5d45"'));
   for(const d of sc.roads){const c=clip(roadBox(d));if(c)o.push(quad(loc(c),0,'fill="#2b2c2e"'))}
   for(const d of sc.roads){const c=clip(roadBox(d));if(!c)continue;const r=loc(c),v=d.x1===d.x2;o.push(v?ln(r.x+r.w/2,r.y,r.x+r.w/2,r.y+r.h,0,'stroke="#ffd84a" stroke-width="1.5"'):ln(r.x,r.y+r.h/2,r.x+r.w,r.y+r.h/2,0,'stroke="#ffd84a" stroke-width="1.5"'));const[tx,ty]=v?Q(r.x+r.w/2,r.y+r.h*.8,0):Q(r.x+r.w*.8,r.y+r.h/2,0);top.push(`<text x="${tx}" y="${ty}" fill="#ffe27a" font-size="12" font-weight="700" font-family="sans-serif" paint-order="stroke" stroke="#000" stroke-width="3">${esc(d.name)}</text>`)}
-  for(const m of[...L.lots,...sc.buildings.filter(k=>k.id!==b.id)]){const c=clip(m);if(c)o.push(quad(loc(c),0,'fill="#5ee0e622" stroke="#5ee0e6" stroke-width=".8"'))}
+  // Real-map geometry is projected whole and clipped to the street-level plate.
+  const iso=pts=>pts.map(([x,y])=>P((x-W.x)/u,(y-W.y)/u,0)).join(' '),cut=[`<clipPath id="plate"><polygon points="${iso([[W.x,W.y],[W.x+W.w,W.y],[W.x+W.w,W.y+W.h],[W.x,W.y+W.h]])}"/></clipPath><g clip-path="url(#plate)">`];
+  if(sc.osm){
+    for(const z of sc.osm.green)cut.push(`<polygon points="${iso(z.pts)}" fill="${z.k==='beach'?'#cdb98a55':'#4f6b3a'}"/>`);
+    for(const z of sc.osm.water)cut.push(`<polygon points="${iso(z.pts)}" fill="#2f5f73"/>`);
+    for(const d of sc.osm.streets)cut.push(`<polyline points="${iso(d.pts)}" fill="none" stroke="#2b2c2e" stroke-width="${f1(d.w/u*s*.8)}" stroke-linejoin="round"/><polyline points="${iso(d.pts)}" fill="none" stroke="#ffd84a" stroke-width="1.5"/>`);
+    const named=new Set();
+    for(const d of sc.osm.streets){const on=d.pts.filter(([x,y])=>x>W.x&&x<W.x+W.w&&y>W.y&&y<W.y+W.h);if(!d.name||!on.length||named.has(d.name))continue;named.add(d.name);const[x,y]=on[on.length>>1],[tx,ty]=Q((x-W.x)/u,(y-W.y)/u,0);top.push(`<text x="${tx}" y="${ty}" fill="#ffe27a" font-size="12" font-weight="700" font-family="sans-serif" paint-order="stroke" stroke="#000" stroke-width="3">${esc(d.name)}</text>`)}
+  }
+  for(const m of[...L.lots,...sc.buildings.filter(k=>k.id!==b.id)]){const c=clip(m);if(c)cut.push(m.pts?`<polygon points="${iso(m.pts)}" fill="#5ee0e622" stroke="#5ee0e6" stroke-width=".8"/>`:quad(loc(c),0,'fill="#5ee0e622" stroke="#5ee0e6" stroke-width=".8"'))}
+  o.push(cut.join('')+'</g>');
   const B=loc(b);
-  o.push(quad(B,0,'fill="#d4a52a33" stroke="#f0c75a" stroke-width="2"'));
+  const foot='fill="#d4a52a33" stroke="#f0c75a" stroke-width="2"';
+  o.push(b.pts?`<polygon points="${iso(b.pts)}" ${foot}/>`:quad(B,0,foot));
   // Corner guides tie every floor back to its footprint on the street.
   for(const[x,y]of[[B.x,B.y],[B.x+B.w,B.y],[B.x+B.w,B.y+B.h],[B.x,B.y+B.h]])o.push(`<line x1="${Q(x,y,0)[0]}" y1="${Q(x,y,0)[1]}" x2="${Q(x,y,F*gap)[0]}" y2="${Q(x,y,F*gap)[1]}" stroke="#f0c75a66" stroke-dasharray="4 4"/>`);
   // Floor plans: double-loaded corridor along the long side, stair core and lift at one end, units either side.
@@ -174,5 +227,6 @@ export function plans(sc,L,b,inds,focus){
   const[gx,gy]=Q(B.x,B.y+B.h,0);
   o.push(`<text x="${f1(gx-14)}" y="${f1(gy+4)}" fill="#f0c75a" font-size="12" font-weight="700" font-family="sans-serif" text-anchor="end" paint-order="stroke" stroke="#000" stroke-width="3">STREET LEVEL</text>`);
   o.push(`<text x="${vx+16}" y="${f1(H-14)}" fill="#a1978a" font-size="12" font-family="sans-serif">${esc(b.name)} · ${F} floors · pre-event plans (simulated) · First Light demo</text>`);
+  if(sc.osm)o.push(`<text x="${vx+16}" y="${f1(H-32)}" fill="#a1978a" font-size="11" font-family="sans-serif">${esc(sc.osm.attribution)}</text>`);
   return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vx} ${vy} ${vw} ${vh}">${o.join('')}</svg>`;
 }

@@ -52,6 +52,8 @@ main{overflow:auto;padding:14px 18px;position:relative}
 .epi .p1,.epi .p2{fill:none;stroke:var(--red);stroke-width:2;animation:ring 2.4s infinite}
 .epi .p2{animation-delay:1.2s}
 .epi line{stroke:#fff8}
+.leg{fill:none;stroke:var(--gold2);stroke-width:2;stroke-dasharray:6 5}
+.attr{fill:#fffc;font-size:11px;paint-order:stroke;stroke:#000a;stroke-width:3px}
 .epi text{fill:#fff;font-weight:800;font-size:14px}
 .epi text.sub{fill:var(--gold2);font-weight:600;font-size:12px}
 @keyframes ring{from{r:6;opacity:1}to{r:40;opacity:0}}
