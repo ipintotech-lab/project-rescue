@@ -1,1 +1,120 @@
-{"title":"רעידת אדמה · גזרת הדקל","subtitle":"שכונת תרגיל מדומה · תמונת מצב משולבת","beforeDate":"01.10.2026 11:30","afterDate":"30.10.2026 09:12","buildings":[{"id":"b","name":"בניין ב׳","address":"הדקל 14","people":19,"floors":6,"apartments":18,"damage":"קריסה נרחבת","source":"נציג הבניין","reportTime":"09:10","confidence":"טרם אומת בשטח","access":"רחוב מזרחי — טרם נבדק","sensor":"תנועה בחיישן S02 · אות להמשך בדיקה","x":58,"y":33},{"id":"a","name":"בניין א׳","address":"הדקל 12","people":5,"floors":4,"apartments":12,"damage":"קריסה חלקית","source":"דיווח תושב","reportTime":"09:08","confidence":"טרם אומת בשטח","access":"חזית דרומית — חסימה מדווחת","sensor":"אין תצפית חיישן משויכת","x":28,"y":55},{"id":"c","name":"בניין ג׳","address":"הזית 3","people":null,"floors":3,"apartments":9,"damage":"דורש סקר נזק","source":"אין דיווח נוכחות","reportTime":"09:12","confidence":"מידע חסר","access":"גישה לא נבדקה","sensor":"אין תצפית חיישן משויכת","x":76,"y":74}]}
+{
+  "title": "M6.9 Earthquake · Valle Verde, Los Angeles County",
+  "subtitle": "Simulated exercise · fictional neighborhood",
+  "images": { "before": "", "after": "" },
+  "epicenter": { "lon": -118.05, "lat": 34.12, "label": "M6.9 · Valle Verde (fictional)" },
+  "response": { "station": "LA", "text": "Unit LA-2 · 11 km · drone airborne T+4" },
+  "site": { "epicenter": { "x": 640, "y": 200 } },
+  "steps": [
+    { "title": "Ready", "t": "Standby", "view": "national", "area": "0%", "head": "Stations and pilots are in place before the event.", "text": "Vehicle-mounted drone units and remote-pilot C2 centers are pre-positioned so any disaster zone is reached within 60 minutes." },
+    { "title": "Event occurs", "t": "T+0", "view": "national", "area": "0%", "head": "M6.9 earthquake strikes Valle Verde, Los Angeles County.", "text": "The nearest unit, LA-2, is 11 km away. Its drone is airborne at T+4, flown by a remote pilot from C2 West." },
+    { "title": "Establish event", "t": "T+6", "view": "event", "area": "0%", "head": "The unit opens a new Event, fully offline.", "text": "No network needed. The event, its boundary and its team exist on the device from the first minutes." },
+    { "title": "Preload data", "t": "T+9", "view": "event", "area": "0%", "head": "Layers 1 and 2: the site as it was.", "text": "Pre-disaster aerial imagery, GIS (roads, water, power, footprints) and building plans were loaded before departure." },
+    { "title": "Capture baseline", "t": "T+18", "view": "event", "area": "64%", "head": "Layer 3: the site as it is now.", "text": "The drone's first pass sets the baseline. Compared against Layer 1, it shows exactly what collapsed." },
+    { "title": "Connect & refresh", "t": "T+31", "view": "event", "area": "100%", "head": "Starlink connects and the picture goes live.", "text": "Aerial imagery keeps refreshing, and every sensor indication lands on the shared map with its source, time and strength." },
+    { "title": "Teams join", "t": "T+52", "view": "event", "area": "100%", "head": "Accredited teams join one shared picture.", "text": "Each team adds data inside its own area, the coordinator resolves conflicts, and the digital twin shows where to dig." }
+  ],
+  "roads": [
+    { "name": "Valle Verde Blvd", "x1": 0, "y1": 150, "x2": 1000, "y2": 150, "w": 26 },
+    { "name": "Cedar Ave", "x1": 0, "y1": 380, "x2": 1000, "y2": 380, "w": 16 },
+    { "name": "Oak St", "x1": 0, "y1": 560, "x2": 1000, "y2": 560, "w": 14 },
+    { "name": "Mission Rd", "x1": 230, "y1": 0, "x2": 230, "y2": 600, "w": 16 },
+    { "name": "Sunset Dr", "x1": 520, "y1": 0, "x2": 520, "y2": 600, "w": 22 },
+    { "name": "Elm St", "x1": 800, "y1": 0, "x2": 800, "y2": 600, "w": 16 }
+  ],
+  "buildings": [
+    { "id": "mission", "name": "Mission Apartments", "floors": 3, "x": 40, "y": 190, "w": 150, "h": 85, "status": "collapsed", "score": "0.71 · High" },
+    { "id": "parkview", "name": "Parkview Senior Living", "floors": 4, "x": 270, "y": 185, "w": 200, "h": 95, "status": "partial", "score": "0.88 · High", "roof": "#b9b4aa" },
+    { "id": "cedar", "name": "Cedar Court Condos", "floors": 6, "x": 565, "y": 190, "w": 170, "h": 120, "status": "collapsed", "score": "0.93 · High" },
+    { "id": "medical", "name": "Medical Offices", "floors": 3, "x": 835, "y": 195, "w": 130, "h": 95, "status": "damaged", "score": "0.34 · Low", "roof": "#9fa4a8" },
+    { "id": "plaza", "name": "Sunset Plaza", "floors": 2, "x": 560, "y": 410, "w": 200, "h": 85, "status": "partial", "score": "0.52 · Medium", "roof": "#c2bdb3" },
+    { "id": "elm", "name": "Elm Terrace", "floors": 2, "x": 840, "y": 410, "w": 130, "h": 75, "status": "standing", "score": "0.12 · Low", "roof": "#8f6b55" }
+  ],
+  "teams": [
+    { "id": "fl", "name": "First Light Unit LA-2", "type": "Drone unit · aerial over the whole event", "color": "#d4a52a", "joins": 2, "area": null },
+    { "id": "tfa", "name": "USAR Task Force A", "type": "Accredited SAR team", "color": "#3ccfcf", "joins": 6, "area": [240, 163, 270, 209] },
+    { "id": "tfb", "name": "County Fire Rescue B", "type": "Accredited SAR team", "color": "#ff7b54", "joins": 6, "area": [4, 163, 218, 209] },
+    { "id": "k9", "name": "Canine Unit K9-3", "type": "Accredited canine team", "color": "#b88cff", "joins": 6, "area": [530, 163, 262, 209] },
+    { "id": "nv", "name": "Mutual-aid USAR · Nevada", "type": "Requesting accreditation", "color": "#7bd389", "joins": 6, "pending": true, "area": [808, 163, 188, 388] }
+  ],
+  "indications": [
+    { "id": "i1", "step": 5, "team": "fl", "building": "cedar", "floor": 3, "source": "thermal", "strength": 0.82, "time": "T+33", "x": 612, "y": 232, "twin": [3.3, 1.0, 1.9], "short": "Thermal · rubble void", "note": "Thermal signature in a rubble void, north-east corner" },
+    { "id": "i2", "step": 5, "team": "fl", "building": "cedar", "floor": 2, "source": "co2", "strength": 0.74, "time": "T+36", "x": 672, "y": 268, "twin": [4.6, 2.5, 1.4], "short": "CO₂ 1,240 ppm ↑", "note": "CO₂ 1,240 ppm and rising · drone-placed sensor S-14" },
+    { "id": "i3", "step": 5, "team": "fl", "building": "cedar", "floor": 1, "source": "acoustic", "strength": 0.68, "time": "T+38", "x": 708, "y": 214, "twin": [5.8, 0.8, 0.9], "short": "Mic · tapping ×3", "note": "Two-way mic S-09: tapping answered three times" },
+    { "id": "i4", "step": 5, "team": "fl", "building": "mission", "floor": 1, "source": "thermal", "strength": 0.41, "time": "T+35", "x": 95, "y": 222, "short": "Weak thermal", "note": "Weak thermal return, partly occluded" },
+    { "id": "i8", "step": 5, "team": "fl", "building": "plaza", "floor": 1, "source": "co2", "strength": 0.28, "time": "T+40", "x": 640, "y": 452, "short": "CO₂ slight rise", "note": "Slight CO₂ rise near loading dock · likely ventilation" },
+    { "id": "i9", "step": 5, "team": "fl", "building": "parkview", "floor": 3, "source": "eo", "strength": 0.9, "time": "T+42", "x": 418, "y": 212, "short": "EO · person waving", "note": "EO camera: person waving from a 3rd-floor window, east wing" },
+    { "id": "i5", "step": 6, "team": "tfa", "building": "parkview", "floor": 3, "source": "field", "strength": 0.85, "time": "T+44", "x": 432, "y": 228, "short": "2 people reported", "note": "Resident reports 2 people, 3rd floor east wing" },
+    { "id": "i6", "step": 6, "team": "k9", "building": "cedar", "floor": 1, "source": "canine", "strength": 0.77, "time": "T+47", "x": 628, "y": 296, "twin": [3.8, 3.9, 0.4], "short": "Canine alert", "note": "Canine alert · ground floor, south side" },
+    { "id": "i7", "step": 6, "team": "tfb", "building": "mission", "floor": 1, "source": "acoustic", "strength": 0.55, "time": "T+49", "x": 150, "y": 250, "short": "Voices heard", "note": "Voices heard intermittently from the basement stair" },
+    { "id": "i10", "step": 6, "team": "fl", "building": "medical", "floor": 2, "source": "field", "strength": 0.45, "time": "T+50", "x": 880, "y": 236, "short": "1 unaccounted", "note": "Relayed call: staff count has 1 person unaccounted for" }
+  ],
+  "conflicts": [
+    { "id": "c1", "step": 6, "x": 650, "y": 300, "title": "Cedar Court ground floor: contradictory reports",
+      "a": { "team": "fl", "claim": "Interior drone pass at T+45: ground floor south searched, no indications." },
+      "b": { "team": "k9", "claim": "Canine alert at T+47: ground floor, south side." },
+      "options": [
+        { "label": "Prioritize the canine alert", "effects": [{ "ind": "i6", "status": "priority" }] },
+        { "label": "Accept the drone search", "effects": [{ "ind": "i6", "status": "dismissed" }] }
+      ] },
+    { "id": "c2", "step": 6, "x": 446, "y": 200, "title": "Parkview 3rd floor east: possible duplicate",
+      "a": { "team": "fl", "claim": "EO sighting: person waving from a 3rd-floor window, east wing." },
+      "b": { "team": "tfa", "claim": "Resident report: 2 people, 3rd floor east wing." },
+      "options": [
+        { "label": "Merge into one indication", "effects": [{ "ind": "i9", "status": "merged" }, { "ind": "i5", "status": "priority" }] },
+        { "label": "Keep as separate indications", "effects": [] }
+      ] }
+  ],
+  "imsi": [ { "x": 640, "y": 250, "n": 9 }, { "x": 360, "y": 230, "n": 4 }, { "x": 110, "y": 235, "n": 3 } ],
+  "c2": [
+    { "name": "C2 West", "lon": -119.81, "lat": 39.53 },
+    { "name": "C2 Central", "lon": -95.99, "lat": 36.15 },
+    { "name": "C2 East", "lon": -78.64, "lat": 35.78 }
+  ],
+  "hazards": [
+    { "label": "Seismic · West Coast", "lon": -119.7, "lat": 40.15, "rx": 38, "ry": 170, "rot": -14, "color": "#ff5a3c", "lx": 95, "ly": -60 },
+    { "label": "New Madrid", "lon": -89.6, "lat": 36.4, "rx": 30, "ry": 24, "color": "#ff5a3c", "ly": -32 },
+    { "label": "Tornado Alley", "lon": -98, "lat": 37, "rx": 85, "ry": 60, "color": "#c084fc" },
+    { "label": "Hurricane · Gulf & Atlantic", "lon": -89, "lat": 29.6, "rx": 210, "ry": 34, "rot": -4, "color": "#38bdf8", "ly": 54 },
+    { "lon": -78.5, "lat": 33.5, "rx": 28, "ry": 120, "rot": 24, "color": "#38bdf8" }
+  ],
+  "stations": [
+    { "id": "LA", "city": "Los Angeles", "lon": -118.24, "lat": 34.05, "units": 3, "phase": "2027" },
+    { "id": "SD", "city": "San Diego", "lon": -117.16, "lat": 32.72, "units": 2, "phase": "2027" },
+    { "id": "SF", "city": "San Francisco", "lon": -122.42, "lat": 37.77, "units": 3, "phase": "2027" },
+    { "id": "SAC", "city": "Sacramento", "lon": -121.49, "lat": 38.58, "units": 1, "phase": "2027" },
+    { "id": "FRE", "city": "Fresno", "lon": -119.79, "lat": 36.74, "units": 1, "phase": "2027" },
+    { "id": "SEA", "city": "Seattle", "lon": -122.33, "lat": 47.61, "units": 2, "phase": "2027" },
+    { "id": "PDX", "city": "Portland", "lon": -122.68, "lat": 45.52, "units": 1, "phase": "2027" },
+    { "id": "HOU", "city": "Houston", "lon": -95.37, "lat": 29.76, "units": 2, "phase": "2027" },
+    { "id": "NOLA", "city": "New Orleans", "lon": -90.07, "lat": 29.95, "units": 2, "phase": "2027" },
+    { "id": "MIA", "city": "Miami", "lon": -80.19, "lat": 25.76, "units": 2, "phase": "2027" },
+    { "id": "TPA", "city": "Tampa", "lon": -82.46, "lat": 27.95, "units": 1, "phase": "2027" },
+    { "id": "SLC", "city": "Salt Lake City", "lon": -111.89, "lat": 40.76, "units": 1, "phase": "2028–29" },
+    { "id": "MEM", "city": "Memphis", "lon": -90.05, "lat": 35.15, "units": 2, "phase": "2028–29" },
+    { "id": "STL", "city": "St. Louis", "lon": -90.2, "lat": 38.63, "units": 1, "phase": "2028–29" },
+    { "id": "OKC", "city": "Oklahoma City", "lon": -97.52, "lat": 35.47, "units": 2, "phase": "2028–29" },
+    { "id": "DAL", "city": "Dallas", "lon": -96.8, "lat": 32.78, "units": 1, "phase": "2028–29" },
+    { "id": "CHS", "city": "Charleston", "lon": -79.93, "lat": 32.78, "units": 1, "phase": "2028–29" },
+    { "id": "ATL", "city": "Atlanta", "lon": -84.39, "lat": 33.75, "units": 1, "phase": "2028–29" },
+    { "id": "PHX", "city": "Phoenix", "lon": -112.07, "lat": 33.45, "units": 1, "phase": "2028–29" },
+    { "id": "LAS", "city": "Las Vegas", "lon": -115.14, "lat": 36.17, "units": 1, "phase": "2028–29" },
+    { "id": "KC", "city": "Kansas City", "lon": -94.58, "lat": 39.1, "units": 1, "phase": "2028–29" },
+    { "id": "BNA", "city": "Nashville", "lon": -86.78, "lat": 36.16, "units": 1, "phase": "2028–29" },
+    { "id": "BHM", "city": "Birmingham", "lon": -86.8, "lat": 33.52, "units": 1, "phase": "2028–29" },
+    { "id": "NYC", "city": "New York", "lon": -74.0, "lat": 40.71, "units": 2, "phase": "2030" },
+    { "id": "BOS", "city": "Boston", "lon": -71.06, "lat": 42.36, "units": 1, "phase": "2030" },
+    { "id": "PHL", "city": "Philadelphia", "lon": -75.17, "lat": 39.95, "units": 1, "phase": "2030" },
+    { "id": "DC", "city": "Washington", "lon": -77.04, "lat": 38.9, "units": 1, "phase": "2030" },
+    { "id": "CHI", "city": "Chicago", "lon": -87.63, "lat": 41.88, "units": 2, "phase": "2030" },
+    { "id": "DEN", "city": "Denver", "lon": -104.99, "lat": 39.74, "units": 1, "phase": "2030" },
+    { "id": "MSP", "city": "Minneapolis", "lon": -93.27, "lat": 44.98, "units": 1, "phase": "2030" },
+    { "id": "DET", "city": "Detroit", "lon": -83.05, "lat": 42.33, "units": 1, "phase": "2030" },
+    { "id": "CLT", "city": "Charlotte", "lon": -80.84, "lat": 35.23, "units": 1, "phase": "2030" },
+    { "id": "ABQ", "city": "Albuquerque", "lon": -106.65, "lat": 35.08, "units": 1, "phase": "2030" },
+    { "id": "BOI", "city": "Boise", "lon": -116.2, "lat": 43.62, "units": 1, "phase": "2030" },
+    { "id": "JAX", "city": "Jacksonville", "lon": -81.66, "lat": 30.33, "units": 1, "phase": "2030" },
+    { "id": "ORF", "city": "Norfolk", "lon": -76.29, "lat": 36.85, "units": 1, "phase": "2030" },
+    { "id": "PIT", "city": "Pittsburgh", "lon": -79.99, "lat": 40.44, "units": 1, "phase": "2030" }
+  ]
+}

@@ -1,1 +1,107 @@
-<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>RescueMap | תמונת מצב משולבת</title><link rel="stylesheet" href="style.css"></head><body><header><div class="brand"><span class="logo">R</span><div><strong>RescueMap</strong><small>מרחב מידע לחילוץ והצלה</small></div></div><div class="event"><span class="pulse"></span><div><b id="title"></b><small id="subtitle"></small></div></div><span class="demo">תרגיל · מידע ותמונות מדומים</span></header><nav><button class="active" data-tab="overview">תמונת מצב</button><button data-tab="reports">דיווחים מהשטח <span id="reportCount">0</span></button><button data-tab="sources">מקורות מידע</button><button data-tab="edit">עריכת תרחיש</button><button id="network" class="connection">● מחובר בהדמיה</button></nav><main><section id="overview" class="view"><div class="heading"><div><span class="eyebrow">תמונת מצב גזרתית</span><h1>להבין את השטח. למקד את החילוץ.</h1><p>תצלומי לפני ואחרי, דיווחי נוכחות ותצפיות — במרחב אחד.</p></div><div class="stamp">עדכון תרגיל אחרון<b>09:12:00</b><span>30 באוקטובר 2026</span></div></div><div id="stats" class="stats"></div><div class="workspace"><aside class="sites panel"><div class="panel-title"><h2>מבנים לבדיקה</h2><span>03 אתרים</span></div><p class="muted">ממוינים לפי מספר אנשים מדווח · אישור מפקד נדרש</p><div id="buildings"></div><div class="info">מספר הדיירים בתיק מבנה אינו מספר האנשים שנכחו באירוע. אתר ללא דיווח דורש בדיקה.</div></aside><section class="imagery panel"><div class="panel-title"><div><h2>תצלום גזרה והשוואת שינויים</h2><p class="muted">צילום אווירי מדומה · שכבת מבנים ודיווחים</p></div><span class="pill">אזור הדקל</span></div><div class="tools"><div class="segmented"><button data-mode="before">לפני</button><button data-mode="compare" class="active">השוואה</button><button data-mode="after">אחרי</button></div><label><input type="checkbox" id="markers" checked> מבנים</label><label class="upload">החלף צילום לפני<input type="file" id="beforeFile" accept="image/*"></label><label class="upload">החלף צילום אחרי<input type="file" id="afterFile" accept="image/*"></label></div><div id="viewer" class="viewer"><div id="afterImage" class="photo after"></div><div id="beforeImage" class="photo before"></div><div class="image-label left">לפני האירוע</div><div class="image-label right">אחרי האירוע</div><div id="divider" class="divider"><span>↔</span></div><div id="pins"></div><div class="watermark">תמונות שנוצרו ב־AI לצורכי הדגמה · לא צילום אירוע אמיתי</div><div class="north">N ↑<small>ללא קנה מידה</small></div></div><div class="slider"><span>אחרי</span><input id="split" type="range" min="0" max="100" value="50" aria-label="חלוקת לפני ואחרי"><span>לפני</span></div><div class="image-meta"><div><span class="dot green"></span> בסיס היסטורי · <b id="beforeDate"></b></div><div><span class="dot orange"></span> רחפן D01 · <b id="afterDate"></b></div></div><p class="muted footnote">הדימויים להמחשה ואינם מיושרים לצורכי מדידה. סימוני המבנים מקורבים. במערכת אמיתית נדרשים רישום גאוגרפי ונתוני מקור מאומתים.</p></section></div><div class="lower"><section class="panel" id="detail"></section><section class="panel"><div class="panel-title"><h2>יומן אירוע</h2><span>תצפיות והחלטות</span></div><div id="timeline"></div></section><section class="panel"><h2>מצב אמצעים</h2><div class="equipment"><b>רחפן D01</b><span class="pill">צילום אחרון 09:12</span><p>RGB · גובה 85 מ׳ · הדמיה בלבד</p></div><div class="equipment"><b>חיישן S02</b><span class="pill amber">אות לבדיקה</span><p>תנועה · 09:11 · אין אימות נוכחות אדם</p></div><div class="equipment"><b>תקשורת</b><p id="networkText">סלולר פעיל בהדמיה · Starlink כנתיב חלופי מתוכנן</p></div><p class="muted">נתוני הציוד אינם מתקבלים מציוד חי.</p></section></div></section><section id="reports" class="view hidden"><div class="heading"><div><span class="eyebrow">חיבור לאנשים בשטח</span><h1>דיווחים ומעקב קליטה</h1><p>הוספת דיווח אינה משנה אוטומטית ספירת אנשים בגלל אפשרות לחפיפה.</p></div></div><div class="report-grid"><form class="panel" id="reportForm"><h2>דיווח חדש לתרגיל</h2><label>מבנה<select id="reportBuilding"></select></label><label>מספר אנשים כולל המדווח<input id="people" type="number" min="1" max="1000" value="1" required></label><label>מצב<select id="condition"><option>לכודים</option><option>פצועים וזקוקים לסיוע</option><option>בטוחים מחוץ למבנה</option></select></label><label>מיקום במבנה והערות<textarea id="notes" maxlength="500" placeholder="לדוגמה קומה שנייה ליד חדר מדרגות"></textarea></label><button class="primary">הוסף דיווח מדומה</button><p class="muted">המידע נשמר בדפדפן הזה בלבד. אין להזין מידע אישי אמיתי. לא נשלח דיווח לגורם חירום.</p></form><div class="panel"><h2>דיווחים שהתקבלו בתרגיל</h2><div id="reportList"></div></div></div></section><section id="sources" class="view hidden"><div class="heading"><div><h1>מקורות מידע ואיכות נתונים</h1><p>כל שכבה מציגה את המקור שלה ואת גבולות השימוש.</p></div></div><div class="panel"><table><thead><tr><th>שכבה</th><th>מקור באבטיפוס</th><th>שימוש מתוכנן</th><th>מגבלה</th></tr></thead><tbody><tr><td>תצלום לפני</td><td>דימוי AI או קובץ מקומי</td><td>תצלום לוויין או אוויר מורשה</td><td>תאריך ורישיון דורשים אימות</td></tr><tr><td>תצלום אחרי</td><td>דימוי AI או קובץ מקומי</td><td>תוצר רחפן קיים</td><td>אין עיגון גאוגרפי באבטיפוס</td></tr><tr><td>פרטי מבנים</td><td>תרחיש מדומה</td><td>תיק מבנה מורשה</td><td>קומות ודירות לא נגזרו מהצילום</td></tr><tr><td>נוכחות</td><td>דיווח תושב מדומה</td><td>דיווחי נפגעים וצוותים</td><td>נדרשים אימות ובדיקת חפיפה</td></tr><tr><td>חיישנים</td><td>נתוני הדגמה</td><td>מתאם לציוד זמין</td><td>אות אינו הוכחה לאדם</td></tr></tbody></table></div></section><section id="edit" class="view hidden"><div class="heading"><div><h1>עריכת תרחיש מהירה</h1><p>שנו את המידע בלי לערוך קוד. עריכה זו חלה בדפדפן הנוכחי בלבד.</p></div></div><form id="editForm" class="panel"><label>כותרת האירוע<input id="editTitle" required maxlength="100"></label><div id="editRows" class="edit-rows"></div><button class="primary">שמור תרחיש בדפדפן</button><button type="button" id="export">ייצא תרחיש JSON</button><button type="button" id="reset">אפס נתוני הדגמה</button><p class="muted">לשינוי ברירת המחדל לכל המשתמשים: ערכו את dist/scenario.json ופרסמו מחדש. תמונות שהועלו הן מקומיות וזמניות.</p></form></section></main><footer>RescueMap 0.2 · אבטיפוס לצורכי תכנון בלבד · אין ניווט מבצעי, זיהוי לכודים או חיבור למערכות חירום</footer><div id="toast" role="status" aria-live="polite" hidden></div><script src="app.js" type="module"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>First Light · SAR Multi-Team Platform</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>FIRST LIGHT</b><span>SAR Multi-Team Platform</span></div>
+  <span class="badge">Simulated demo · not live data</span>
+  <nav id="nav">
+    <button data-view="national">National readiness</button>
+    <button data-view="event">Event workspace</button>
+    <button data-view="teams">Teams &amp; coordination</button>
+    <button data-view="scenario">Scenario</button>
+  </nav>
+  <div class="ctl">
+    <span id="net" class="chip"></span>
+    <label class="role">Viewing as
+      <select id="role">
+        <option value="owner">Platform owner</option>
+        <option value="coord">Incident coordinator</option>
+        <option value="team">SAR team · Task Force A</option>
+        <option value="device">Device · sensor S-14</option>
+      </select>
+    </label>
+    <button id="present" class="btn ghost" title="Present mode (P) · fullscreen (F)">Present</button>
+  </div>
+</header>
+
+<main>
+  <section id="v-national" class="view">
+    <div class="nat">
+      <div class="natmap"><svg id="usmap" viewBox="0 0 900 500" role="img" aria-label="US station coverage map"></svg></div>
+      <aside class="natside">
+        <h3>Deployment phases</h3>
+        <div id="phases" class="phases"></div>
+        <div id="natstats" class="stats"></div>
+        <h3>Legend</h3>
+        <ul class="legend">
+          <li><i class="lg-st"></i>Drone station · dot size = units</li>
+          <li><i class="lg-ring"></i>60-minute response ring</li>
+          <li><i class="lg-c2"></i>Remote-pilot C2 center</li>
+          <li><i class="lg-hz"></i>Hazard zone</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section id="v-event" class="view">
+    <div id="kpis" class="kpis"></div>
+    <div class="ws">
+      <div class="stagewrap">
+        <div class="modes" id="modes">
+          <button data-mode="map">Map</button>
+          <button data-mode="plans">Building plans</button>
+          <button data-mode="twin">Digital twin</button>
+          <span id="planctl" class="planctl"></span>
+          <span id="live" class="live"></span>
+        </div>
+        <div class="stage" id="stage">
+          <svg id="map" viewBox="0 0 1000 600" role="img" aria-label="Event map"></svg>
+          <input type="range" id="slider" min="0" max="100" value="50" aria-label="Compare layer 1 and layer 3">
+          <div id="pop" class="pop" hidden></div>
+          <div id="p2banner" class="p2banner" hidden>PHASE 2 PREVIEW · not in Phase 1 scope</div>
+          <div id="bio" class="bio" hidden><b>Layer 6 · Biometric</b>Vital-sign sensing is a Phase 2 capability. Shown here as a placeholder only.</div>
+        </div>
+        <div id="plans" class="alt" hidden></div>
+        <div id="twin" class="alt" hidden></div>
+      </div>
+      <aside class="rail" id="rail"></aside>
+    </div>
+    <div id="devmask" class="mask" hidden>
+      <div><b>Devices have no map view</b><p>A device such as sensor S-14 only sends its readings to its own team. Switch the role to see the shared picture.</p></div>
+    </div>
+  </section>
+
+  <section id="v-teams" class="view">
+    <div class="grid2">
+      <div class="card"><h3>Roles &amp; permissions</h3><div id="roles"></div></div>
+      <div class="card"><h3>Conflict queue</h3><div id="conflicts"></div></div>
+      <div class="card"><h3>Teams</h3><ul id="teamlist" class="teams"></ul></div>
+      <div class="card"><h3>Event log</h3><ol id="log" class="log"></ol></div>
+    </div>
+  </section>
+
+  <section id="v-scenario" class="view">
+    <div class="card scen">
+      <h3>Scenario data</h3>
+      <p class="hint">Edit the simulated event. Set <code>images.before</code> / <code>images.after</code> to image paths (1000×600) to replace the drawn aerial. Saved in this browser only.</p>
+      <textarea id="json" spellcheck="false"></textarea>
+      <div class="row"><button id="jsave" class="btn">Save</button><button id="jexport" class="btn ghost">Export</button><button id="jreset" class="btn ghost">Reset to default</button><span id="jmsg" class="hint"></span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="steps">
+  <div id="stepper" class="stepper"></div>
+  <div class="narr"><b id="nhead"></b><span id="ntext"></span></div>
+  <div class="arrows"><button id="prev" class="btn ghost" aria-label="Previous step">‹</button><button id="next" class="btn" aria-label="Next step">›</button></div>
+</footer>
+<div id="toast" class="toast" role="status"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
