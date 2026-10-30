@@ -124,15 +124,26 @@ export function gis(sc,L){
   return o.join('');
 }
 
-export const change=sc=>sc.buildings.filter(b=>b.status==='collapsed'||b.status==='partial').map(b=>rect({x:b.x-7,y:b.y-7,w:b.w+14,h:b.h+14},'fill="none" stroke="#ff4d3d" stroke-width="2.5" stroke-dasharray="7 4"')+`<text class="cl" x="${b.x-7}" y="${b.y+b.h+21}">${b.status==='collapsed'?'COLLAPSED':'PARTIAL COLLAPSE'} · Δ vs layer 1</text>`).join('');
+export const change=sc=>sc.buildings.filter(b=>b.status==='collapsed'||b.status==='partial').map(b=>rect({x:b.x-7,y:b.y-7,w:b.w+14,h:b.h+14},'fill="none" stroke="#ff4d3d" stroke-width="2.5" stroke-dasharray="7 4"')+`<text class="cl" x="${b.x-7}" y="${b.y+b.h+21}">OBSERVED · ${b.status==='collapsed'?'COLLAPSED':'PARTIAL COLLAPSE'} · Δ vs layer 1</text>`).join('');
 
 export const areas=teams=>teams.filter(t=>t.area).map(t=>{const[x,y,w,h]=t.area;return rect({x,y,w,h},`fill="${t.color}" fill-opacity=".08" stroke="${t.color}" stroke-width="2.5" stroke-dasharray="10 6"`)+`<rect x="${x+4}" y="${y+h-24}" width="${f1(t.name.length*6.6+14)}" height="19" rx="3" fill="${t.color}"/><text class="tl" x="${x+11}" y="${y+h-10}">${esc(t.name)}</text>`}).join('');
+
+// Human reports from teams on the ground: hazards and access routes. Never drawn as verified or safe.
+export function field(f,on){
+  let o='';
+  if(on.routes)for(const r of f.routes){
+    const bl=r.kind==='blocked',m=r.pts[Math.floor((r.pts.length-1)/2)],n=r.pts[Math.floor((r.pts.length-1)/2)+1],a=Math.atan2(n[1]-m[1],n[0]-m[0])*180/Math.PI,ang=a>90?a-180:a<-90?a+180:a;
+    o+=`<g class="rt${bl?' bl':''}"><title>Human report · ${esc(r.label)} · not verified safe</title>${pl(r.pts,9,'#000','',' opacity=".45"')}${pl(r.pts,4,bl?'#ff4d3d':'#3ddc84',bl?'4 6':'14 8')}<text class="rl" text-anchor="middle" transform="translate(${f1((m[0]+n[0])/2)} ${f1((m[1]+n[1])/2)}) rotate(${f1(ang)}) translate(0 ${bl?-12:18})">${bl?'✕ ':''}${esc(r.label)} · REPORTED${bl?'':' · NOT VERIFIED SAFE'}</text></g>`;
+  }
+  if(on.hazards)for(const h of f.hazards)o+=`<g class="hz" transform="translate(${h.x} ${h.y})"><title>Human report · ${esc(h.note)} · unverified</title><path d="M0 -15 L14 10 L-14 10 Z"/><text class="hm" y="7">!</text><text class="hl" x="17" y="4">${esc(h.label)} · REPORTED</text></g>`;
+  return o;
+}
 
 export const heat=inds=>inds.map(i=>`<circle cx="${i.x}" cy="${i.y}" r="${f1(28+60*i.strength)}" fill="url(#hot)" opacity="${f1(.3+.6*i.strength)}"/>`).join('');
 
 export function p2(sc,on){
   let o='';
-  if(on.score)for(const b of sc.buildings)o+=`<g class="p2b"><rect x="${b.x+b.w-112}" y="${b.y+b.h-24}" width="108" height="20" rx="3"/><text x="${b.x+b.w-106}" y="${b.y+b.h-10}">Score ${esc(b.score)}</text></g>`;
+  if(on.score)for(const b of sc.buildings)o+=`<g class="p2b"><rect x="${b.x+b.w-112}" y="${b.y+b.h-24}" width="108" height="20" rx="3"/><text x="${b.x+b.w-106}" y="${b.y+b.h-10}">AI · score ${esc(b.score)}</text></g>`;
   if(on.imsi)for(const c of sc.imsi)o+=`<circle cx="${c.x}" cy="${c.y}" r="${18+c.n*3}" class="p2c"/><text class="p2t" x="${c.x}" y="${c.y+4}" text-anchor="middle">~${c.n} handsets</text>`;
   return o;
 }

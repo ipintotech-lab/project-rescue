@@ -102,6 +102,7 @@
     {"id": "ORF", "city": "Norfolk", "lon": -76.29, "lat": 36.85, "units": 1, "phase": "2030"},
     {"id": "PIT", "city": "Pittsburgh", "lon": -79.99, "lat": 40.44, "units": 1, "phase": "2030"}
   ],
+  "field": {"hazards": [{"id": "h1", "step": 6, "team": "tfb", "x": 578, "y": 150, "label": "Gas smell", "note": "Gas smell near B5, east side"}, {"id": "h2", "step": 6, "team": "k9", "x": 498, "y": 400, "label": "Debris on roadway", "note": "Debris across Av. Caraballeda, vehicles cannot pass"}, {"id": "h3", "step": 6, "team": "tfa", "x": 300, "y": 222, "label": "Power line down", "note": "Overhead line down on Av. La Costanera"}], "routes": [{"id": "r1", "step": 6, "team": "tfb", "kind": "access", "label": "Vehicle access", "pts": [[475.9, 66.3], [494.6, 70.9], [516.6, 77.0], [538.4, 86.1], [559.7, 97.9], [591.2, 118.7], [634.9, 156.2], [654.4, 179.5], [662.2, 188.7]]}, {"id": "r2", "step": 6, "team": "k9", "kind": "access", "label": "Foot access to B1", "pts": [[690.1, 236.2], [672.9, 232.7], [649.8, 226.1], [626.8, 220.9], [585.8, 213.5], [555.9, 209.5]]}, {"id": "r3", "step": 6, "team": "k9", "kind": "blocked", "label": "Blocked", "pts": [[541.3, 234.0], [490.1, 430.1]]}]},
   "osm": {
     "attribution": "Streets & footprints © OpenStreetMap contributors (ODbL) · damage grading: Copernicus EMS EMSR884, 6 Jul 2026",
     "streets": [

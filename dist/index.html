@@ -55,10 +55,12 @@
       <div class="stagewrap">
         <div class="modes" id="modes">
           <button data-mode="map">Map</button>
+          <button data-mode="drone">Drone media</button>
           <button data-mode="plans">Building plans</button>
           <button data-mode="twin">Digital twin</button>
           <span id="planctl" class="planctl"></span>
           <span id="live" class="live"></span>
+          <button id="focus" class="btn ghost">Focus imagery</button>
         </div>
         <div class="stage" id="stage">
           <svg id="map" viewBox="0 0 1000 600" role="img" aria-label="Event map"></svg>
@@ -70,6 +72,8 @@
         <div id="mapdata" class="mapdata" hidden></div>
         <div id="plans" class="alt" hidden></div>
         <div id="twin" class="alt" hidden></div>
+        <div id="drone" class="alt" hidden></div>
+        <input type="file" id="upfile" hidden>
       </div>
       <aside class="rail" id="rail"></aside>
     </div>
