@@ -5,7 +5,7 @@ Rescue map and cordoned rescue teams
 
 A simulated, offline demo of the SAR Multi-Team Platform. Run it with `npm start`, then open http://localhost:3000.
 
-- **Site:** a 600 × 360 m block of Los Corales, Caraballeda, La Guaira, Venezuela, around a street corner shown in news photos of the collapse, after the M7.2 and M7.5 earthquakes of 24 Jun 2026. The streets and building footprints are real, from OpenStreetMap. Building damage grades are real, from Copernicus EMS EMSR884 (6 Jul 2026). Both are credited on the map and in the plans.
+- **Site:** a 600 × 360 m block of central Caraballeda, La Guaira, Venezuela, around a residential building shown in news photos of the collapse, after the M7.2 and M7.5 earthquakes of 24 Jun 2026. The streets and building footprints are real, from OpenStreetMap. Building damage grades are real, from Copernicus EMS EMSR884 (6 Jul 2026). Both are credited on the map and in the plans.
 - **What is simulated:** the response unit (MIA-1, airlifted from Miami, with T+ counted from its arrival), the teams, sensor indications, conflicts, hazards and access routes. Focus buildings are labelled B1–B6 rather than by their real names, and every indication is prefixed "Simulated ·".
 - **Views:** National readiness, Event workspace (Map / Drone media / Building plans / Digital twin), Teams & coordination, Scenario.
 - **Presenter keys:**
