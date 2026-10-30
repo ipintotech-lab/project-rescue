@@ -146,20 +146,28 @@ function renderMap(){
 }
 function setSlider(){const x=S.slider*10,r=$('#clipRect');if(!r)return;r.setAttribute('x',x);r.setAttribute('width',1000-x);$('#divider')?.setAttribute('transform',`translate(${x} 0)`)}
 
+// Popup beside the marker, flipped left when it would run past the right edge; always inside the map.
+function place(p,x,y){
+  p.hidden=false;
+  const s=$('#stage'),W=s.clientWidth,H=s.clientHeight,px=x/1000*W,py=y/600*H,w=p.offsetWidth,h=p.offsetHeight;
+  const l=px+16+w>W-4?px-16-w:px+16,t=Math.min(py+16,H-4-h);
+  p.style.left=Math.max(4,l)-16+'px';p.style.top=Math.max(4,t)-16+'px';
+}
+
 function pop(){
   const p=$('#pop'),i=allInds().find(i=>i.id===S.sel),ph=sc.photos?.find(x=>x.id===S.sel);
   if(ph&&S.mode==='map')return photoPop(p,ph);
   if(!i||S.mode!=='map'){p.hidden=true;return}
   const b=sc.buildings.find(b=>b.id===i.building),s=status(i),f=i.floor||1;
   p.innerHTML=`<button class="x" data-close aria-label="Close">×</button><div class="src ${D.lvl(i.strength)}">${SRC[i.source]} · ${esc(SRCN[i.source])}</div><p>${esc(i.note)}</p><dl><dt>Evidence</dt><dd>${cls(EV[i.source])}</dd><dt>Time</dt><dd>${esc(i.time)}</dd><dt>Strength</dt><dd>${Math.round(i.strength*100)}%</dd><dt>Source team</dt><dd>${esc(team(i.team)?.name)}</dd>${b?`<dt>Location</dt><dd>${esc(b.name)} · floor ${f}</dd>`:''}${s!=='active'?`<dt>Status</dt><dd class="stt">${s}</dd>`:''}</dl>${b?`<button class="btn" data-plan="${b.id}" data-floor="${f}">Open building plans · floor ${f}</button>`:''}`;
-  p.style.left=Math.min(i.x/10,68)+'%';p.style.top=Math.min(i.y/6,52)+'%';p.hidden=false;
+  place(p,i.x,i.y);
 }
 
 // Published news media: linked to the publisher, never copied into the site.
 function photoPop(p,ph){
   const b=sc.buildings.find(b=>b.id===ph.building);
   p.innerHTML=`<button class="x" data-close aria-label="Close">×</button><div class="src">${esc(ph.kind)} · published</div><p>${esc(ph.title)}</p><dl><dt>Evidence</dt><dd>Published media · not verified by teams</dd><dt>Source</dt><dd>${esc(ph.outlet)}</dd><dt>Credit</dt><dd>${esc(ph.credit)}</dd><dt>Date</dt><dd>${esc(ph.date)}</dd><dt>Location</dt><dd>${b?esc(b.name)+' · ':''}${esc(ph.place)}</dd></dl><a class="btn" href="${esc(ph.url)}" target="_blank" rel="noopener">Open at source ↗</a>`;
-  p.style.left=Math.min(ph.x/10,68)+'%';p.style.top=Math.min(ph.y/6,30)+'%';p.hidden=false;
+  place(p,ph.x,ph.y);
 }
 
 function planCtl(){

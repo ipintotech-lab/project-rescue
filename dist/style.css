@@ -136,7 +136,7 @@ a.sv{color:var(--gold2);white-space:nowrap}
 .tw text{fill:#fff;font-size:13px;font-weight:700}
 .tw .glow{opacity:.35}
 
-.pop{position:absolute;transform:translate(16px,16px);width:260px;background:#0d0b08f2;border:1px solid var(--gold);border-radius:8px;padding:10px 12px;font-size:12px;z-index:2}
+.pop{position:absolute;transform:translate(16px,16px);width:260px;background:#0d0b08f2;border:1px solid var(--gold);border-radius:8px;padding:10px 12px;font-size:12px;z-index:2;max-height:calc(100% - 8px);overflow:auto}
 .pop p{margin:6px 0}
 .pop .x{position:absolute;right:6px;top:4px;background:none;border:0;color:var(--mute);font-size:16px}
 .pop .src{font-weight:800}
