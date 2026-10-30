@@ -42,10 +42,10 @@ function build(){L=D.layout(sc);art={before:D.aerial(sc,L,false,imgOf('before'))
 build();
 
 const defaults=i=>({l1:i>=3,l2:i===3,l3:i>=4,l4:i>=5,l5:i>=6});
-const S={view:'national',step:0,role:'coord',phase:'all',resolved:{},approved:false,added:[],log:[],plan:{b:'b1',f:0},...get(KEY),mode:'map',slider:50,src:new Set(Object.keys(SRC)),p2:{score:false,imsi:false,bio:false},refresh:0,sel:null,rtext:'',present:false,focus:false,ov:{sectors:true,hazards:true,routes:true}};
+const S={view:'national',step:0,role:'coord',phase:'all',resolved:{},approved:false,added:[],log:[],plan:{b:'b1',f:0},holo:false,...get(KEY),mode:'map',slider:50,src:new Set(Object.keys(SRC)),p2:{score:false,imsi:false,bio:false},refresh:0,sel:null,rtext:'',present:false,focus:false,ov:{sectors:true,hazards:true,routes:true}};
 S.step=Math.max(0,Math.min(sc.steps.length-1,S.step|0));
 S.layers=defaults(S.step);
-const persist=()=>put(KEY,{view:S.view,step:S.step,role:S.role,phase:S.phase,resolved:S.resolved,approved:S.approved,added:S.added,log:S.log,plan:S.plan});
+const persist=()=>put(KEY,{view:S.view,step:S.step,role:S.role,phase:S.phase,resolved:S.resolved,approved:S.approved,added:S.added,log:S.log,plan:S.plan,holo:S.holo});
 
 const now=()=>sc.steps[S.step].t;
 const log=text=>S.log.push({t:now(),text});
@@ -68,8 +68,8 @@ function restart(){Object.assign(S,{step:0,layers:defaults(0),view:'national',re
 
 function render(){
   const st=sc.steps[S.step];
-  document.body.classList.toggle('present',S.present);document.body.classList.toggle('focus',S.focus);
-  $('#present').textContent=S.present?'Exit present':'Present';
+  document.body.classList.toggle('present',S.present);document.body.classList.toggle('focus',S.focus);document.body.classList.toggle('holo',S.holo);
+  $('#present').textContent=S.present?'Exit present':'Present';$('#holo').classList.toggle('on',S.holo);
   $$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.view===S.view));
   $$('.view').forEach(v=>v.hidden=v.id!=='v-'+S.view);
   const net=S.step===0?['Standby','']:S.step<5?['Offline · local only','off']:['Starlink connected','on'];
@@ -117,8 +117,11 @@ function renderMap(){
   let h=D.defs;
   if(st<3||!(Ly.l1||Ly.l3&&st>=4))h+=grid()+(st<2?'<text class="blank" x="500" y="300" text-anchor="middle">No active event</text>':`<rect x="20" y="20" width="960" height="560" fill="none" stroke="#d4a52a" stroke-width="2" stroke-dasharray="12 8"/><text class="blank" x="500" y="290" text-anchor="middle">Event boundary set · working offline</text><text class="blank s" x="500" y="318" text-anchor="middle">${st<3?'Preloaded layers open at step 3':'All image layers are hidden'}</text>`);
   else{
-    if(Ly.l1)h+=`<g>${art.before}</g>`;
-    if(Ly.l3&&st>=4)h+=`<g${both?' clip-path="url(#clipBefore)"':''}>${art.after}</g>`;
+    // HUD style tints the aerial; Focus imagery keeps true colour.
+    const tint=S.holo&&!S.focus?' filter="url(#hudtint)"':'';
+    if(Ly.l1)h+=`<g${tint}>${art.before}</g>`;
+    if(Ly.l3&&st>=4)h+=`<g${both?' clip-path="url(#clipBefore)"':''}><g${tint}>${art.after}</g></g>`;
+    if(S.holo)h+=D.wire(sc,L);
   }
   if(Ly.l2&&st>=3)h+=D.gis(sc,L);
   if(Ly.l3&&st>=4)h+=D.change(sc);
@@ -254,6 +257,7 @@ $('#prev').onclick=()=>setStep(S.step-1);
 $('#next').onclick=()=>setStep(S.step+1);
 $('#role').onchange=e=>{S.role=e.target.value;S.sel=null;toast('Viewing as '+e.target.selectedOptions[0].text);render()};
 $('#present').onclick=()=>togglePresent();
+$('#holo').onclick=()=>toggleHolo();
 $('#phases').addEventListener('click',e=>{const b=e.target.closest('[data-phase]');if(b){S.phase=b.dataset.phase;renderNational();persist()}});
 $('#modes').addEventListener('click',e=>{
   const m=e.target.closest('[data-mode]'),f=e.target.closest('[data-floor]');
@@ -336,6 +340,7 @@ $('#jsave').onclick=()=>{
 $('#jexport').onclick=()=>download('scenario.json',new Blob([$('#json').value],{type:'application/json'}));
 $('#jreset').onclick=()=>{sc=BASE;put(SKEY,null);build();dirty=false;$('#jmsg').textContent='Reset to the default scenario';render()};
 
+function toggleHolo(){S.holo=!S.holo;persist();render()}
 function togglePresent(){S.present=!S.present;if(S.present)restart();else render()}
 document.addEventListener('keydown',e=>{
   if(e.target.closest('input,textarea,select'))return;
@@ -344,6 +349,7 @@ document.addEventListener('keydown',e=>{
   else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();setStep(S.step-1)}
   else if(k==='Home')restart();
   else if(k==='p'||k==='P')togglePresent();
+  else if(k==='h'||k==='H')toggleHolo();
   else if(k==='f'||k==='F'){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen().catch(()=>toast('Fullscreen is not available here'))}
   else if(k==='Escape'){if(S.present){S.present=false;render()}else if(S.sel){S.sel=null;pop();renderRail()}}
 });

@@ -25,6 +25,8 @@ export const defs=`<defs>
 <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .22 0"/></filter>
 <filter id="soft"><feGaussianBlur stdDeviation="6"/></filter>
 <radialGradient id="hot"><stop offset="0" stop-color="#ff3b1f" stop-opacity=".95"/><stop offset=".45" stop-color="#ffb000" stop-opacity=".55"/><stop offset="1" stop-color="#ffd84a" stop-opacity="0"/></radialGradient>
+<filter id="hudtint" color-interpolation-filters="sRGB"><feColorMatrix values=".03 .06 .01 0 0  .1 .26 .06 0 .015  .05 .12 .03 0 .01  0 0 0 1 0"/></filter>
+<filter id="wglow" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 <clipPath id="clipBefore"><rect id="clipRect" width="500" height="600"/></clipPath>
 </defs>`;
 
@@ -99,6 +101,20 @@ export function aerial(sc,L,after,img){
   if(after)o.push('<rect width="1000" height="600" fill="#d9c6a0" opacity=".1"/>');
   o.push('<rect width="1000" height="600" filter="url(#grain)"/>');
   if(img)o.push(`<image href="${esc(img)}" width="1000" height="600" preserveAspectRatio="xMidYMid slice"/>`);
+  return o.join('');
+}
+
+// HUD style: every footprint as a glowing wireframe, focus buildings extruded by floor count.
+export function wire(sc,L){
+  const o=['<g class="wire" filter="url(#wglow)">'];
+  for(const d of sc.osm?sc.osm.streets:[])o.push(pl(d.pts,.8,'#39f59a55','3 6'));
+  for(const h of L.lots)o.push(shape(h,'fill="#39f59a0d" stroke="#39f59a" stroke-width=".7" stroke-opacity=".55"'));
+  for(const b of sc.buildings){
+    const k=Math.min(b.floors,8)*2.2,up=p=>p.map(([x,y])=>[x,f1(y-k)]),base=b.pts||[[b.x,b.y],[b.x+b.w,b.y],[b.x+b.w,b.y+b.h],[b.x,b.y+b.h]];
+    o.push(pg(base,'fill="#39f59a14" stroke="#39f59a" stroke-width="1.2"'),pg(up(base),'fill="none" stroke="#b8ffd9" stroke-width="1.2"'));
+    for(const[x,y]of base)o.push(`<line x1="${x}" y1="${y}" x2="${x}" y2="${f1(y-k)}" stroke="#39f59a" stroke-opacity=".6" stroke-width=".7"/>`);
+  }
+  o.push('</g>');
   return o.join('');
 }
 

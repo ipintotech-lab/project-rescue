@@ -293,3 +293,29 @@ body.present .narr b{font-size:18px}
 body.focus .kpis,body.focus .rail{display:none}
 body.focus .ws{grid-template-columns:1fr}
 body.focus .stage{width:min(100%,calc((100vh - 240px)*5/3))}
+
+/* HUD style (H): holographic green over the same data; damage colours unchanged. */
+body.holo{--gold:#39f59a;--gold2:#8dffc4;--line:#1d4a36;--panel:#0b1712;--panel2:#10221a;--bg:#060c09;background:var(--bg)}
+.holo .top{background:#040906}
+#holo.on{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px #39f59a66}
+.holo .stage,.holo .alt{border-color:#39f59a88;box-shadow:0 0 18px #39f59a33,inset 0 0 40px #39f59a14;background:#030805}
+.holo .stage::after,.holo .alt::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:repeating-linear-gradient(0deg,#39f59a0a 0 1px,transparent 1px 3px),
+  linear-gradient(#39f59a,#39f59a) 10px 10px/26px 2px no-repeat,linear-gradient(#39f59a,#39f59a) 10px 10px/2px 26px no-repeat,
+  linear-gradient(#39f59a,#39f59a) right 10px top 10px/26px 2px no-repeat,linear-gradient(#39f59a,#39f59a) right 10px top 10px/2px 26px no-repeat,
+  linear-gradient(#39f59a,#39f59a) 10px bottom 10px/26px 2px no-repeat,linear-gradient(#39f59a,#39f59a) 10px bottom 10px/2px 26px no-repeat,
+  linear-gradient(#39f59a,#39f59a) right 10px bottom 10px/26px 2px no-repeat,linear-gradient(#39f59a,#39f59a) right 10px bottom 10px/2px 26px no-repeat}
+.holo .stage::before{content:"";position:absolute;left:0;right:0;height:70px;top:-70px;pointer-events:none;z-index:2;background:linear-gradient(transparent,#39f59a1f 80%,#39f59a66);animation:scan 6s linear infinite}
+@keyframes scan{to{top:100%}}
+@media (prefers-reduced-motion:reduce){.holo .stage::before{animation:none;display:none}}
+.holo.focus .stage::after,.holo.focus .stage::before{display:none}
+.holo .alt .cap{background:#030805e6}
+.holo #twin svg,.holo #plans svg{filter:drop-shadow(0 0 2px #39f59a88)}
+.holo #twin svg polygon{fill:#39f59a0f;stroke:#39f59a;stroke-opacity:.75;stroke-width:.8}
+.holo #plans svg [stroke="#5ee0e6"]{stroke:#39f59a}
+.holo #plans svg [fill="#5ee0e622"]{fill:#39f59a14}
+.holo #plans svg [fill="#0b1a2470"]{fill:#03140c99}
+.holo #plans svg [stroke="#e9f6ff"]{stroke:#b8ffd9}
+.holo #plans svg [fill="#0f0d0a"]{fill:#030805}
+.holo #plans svg [fill="#3d4234"]{fill:#0a2416;stroke:#39f59a88}
+.holo #map [stroke="#5ee0e6"]{stroke:#8dffc4}
