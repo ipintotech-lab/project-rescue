@@ -88,6 +88,7 @@ function renderNational(){
   $('#usmap').innerHTML=D.usMap(sc,{phase:S.phase,step:S.step});
   $('#phases').innerHTML=['all',...new Set(sc.stations.map(s=>s.phase))].map(p=>`<button data-phase="${esc(p)}" class="${S.phase===p?'on':''}">${p==='all'?'All phases':esc(p)}<b>${units(p)} units</b></button>`).join('');
   $('#natstats').innerHTML=[[units(S.phase),'drone units'],[n(S.phase).length,'stations'],[sc.c2.length,'remote-pilot C2 centers'],['60 min','to any disaster zone']].map(([a,b])=>`<div class="big"><b>${esc(a)}</b><span>${b}</span></div>`).join('');
+  const r=sc.reports;$('#natrep').innerHTML=r&&S.step>=r.step?`<h3>${esc(r.title)}</h3>${r.items.map(i=>`<div class="big rep"><b>${esc(i.n)}</b><span>${esc(i.what)}</span><small>${esc(i.src)}</small></div>`).join('')}<p class="hint">${esc(r.note)} ${esc(r.via)}.</p>`:'';
 }
 
 function renderEvent(){
@@ -162,8 +163,11 @@ function mapData(){
     const stt=st<t.joins?'<em>Not joined</em>':t.pending&&!S.approved?'<span class="partial">Pending approval</span>':'<em class="ok">On the map</em>';
     return`<tr><td><b style="color:${esc(t.color)}">■</b> <b>${esc(t.name)}</b>${S.role==='team'&&t.id===MY?' <span class="sc">you</span>':''}</td><td>${esc(t.type)}</td><td>${area?area.map(b=>`<span class="${hit(b)?b.status:''}">${esc(b.name)}</span>`).join(', ')||'Open ground':'Whole event'}</td><td>${st>=5?n:'–'}</td><td>${stt}</td></tr>`;
   }).join('');
-  return`<div class="tdata">${mediaTable(['before','after'])}<p class="hint">Before/after images must be top-down, north up and cropped to the mapped area (600 × 360 m) so footprints, sectors and routes line up. Oblique photos and video go in Drone media.</p><div class="tstats" style="grid-template-columns:repeat(${stats.length},1fr)">${stats.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div><table><thead><tr><th>Team</th><th>Type</th><th>Work area</th><th>Indications</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  return`<div class="tdata">${mediaTable(['before','after'])}<p class="hint">Before/after images must be top-down, north up and cropped to the mapped area (600 × 360 m) so footprints, sectors and routes line up. Oblique photos and video go in Drone media.</p>${sc.buildings.some(b=>b.sv)?`<p class="hint">Street View · pre-event: ${sc.buildings.map(b=>svLink(b,esc(b.id.toUpperCase()))).join(' ')}</p>`:''}<div class="tstats" style="grid-template-columns:repeat(${stats.length},1fr)">${stats.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div><table><thead><tr><th>Team</th><th>Type</th><th>Work area</th><th>Indications</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
+// Google Street View still shows these streets before the earthquake; linked out, never embedded.
+const svUrl=b=>b.sv&&`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${b.sv.lat},${b.sv.lon}&heading=${b.sv.heading}`;
+const svLink=(b,t)=>b.sv?`<a class="sv" href="${esc(svUrl(b))}" target="_blank" rel="noopener" title="Opens Google Maps Street View · imagery from before the earthquake">${t} ↗</a>`:'';
 const DMG={collapsed:'Collapsed',partial:'Partial collapse',damaged:'Damaged',standing:'No visible collapse'};
 function plansData(b){
   const st=S.step,pre=st>=3,seen=st>=4,live=st>=5,F=b.floors,units=pre?Math.max(2,Math.round(Math.max(b.w,b.h)/40))*2:null;
@@ -179,9 +183,9 @@ function plansData(b){
 }
 function renderPlans(){
   const el=$('#plans'),b=building();
-  if(S.step<3){el.innerHTML=`<div class="cap"><b>Layered building plans · ${esc(b.name)}</b> · <span class="lk">LOCKED</span> plans preload with Layer 2 at step 3 · Preload data</div>`+plansData(b);return}
+  if(S.step<3){el.innerHTML=`<div class="cap"><b>Layered building plans · ${esc(b.name)}</b> · ${svLink(b,'Street View · pre-event')} · <span class="lk">LOCKED</span> plans preload with Layer 2 at step 3 · Preload data</div>`+plansData(b);return}
   const show=S.layers.l4&&S.step>=5;
-  el.innerHTML=`<div class="cap"><b>Layered building plans · ${esc(b.name)}</b> · street plan at the base, each floor stacked above it · ${show?'sensor indications placed by floor':'indications appear with Layer 4 (step 5)'}</div>`+D.plans(sc,L,b,show?inds():[],S.plan.f)+plansData(b);
+  el.innerHTML=`<div class="cap"><b>Layered building plans · ${esc(b.name)}</b> · ${svLink(b,'Street View · pre-event')} · street plan at the base, each floor stacked above it · ${show?'sensor indications placed by floor':'indications appear with Layer 4 (step 5)'}</div>`+D.plans(sc,L,b,show?inds():[],S.plan.f)+plansData(b);
 }
 function savePlan(png){
   const s=$('#plans svg');if(!s)return;

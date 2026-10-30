@@ -66,6 +66,8 @@ main{overflow:auto;padding:14px 18px;position:relative}
 .big{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
 .big b{display:block;font-size:24px;color:var(--gold)}
 .big span{color:var(--mute);font-size:12px}
+.natrep .rep{margin-top:8px}.rep small{display:block;color:var(--mute);font-size:11px;margin-top:4px}
+a.sv{color:var(--gold2);white-space:nowrap}
 .legend{list-style:none;padding:0;margin:0;color:var(--mute);font-size:12px}
 .legend li{display:flex;align-items:center;gap:8px;margin:5px 0}
 .legend i{width:14px;height:14px;display:inline-block}
