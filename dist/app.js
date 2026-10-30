@@ -146,11 +146,22 @@ function savePlan(png){
   img.src=url;
 }
 
+const DMG={collapsed:'Collapsed',partial:'Partial collapse',damaged:'Damaged',standing:'Standing'};
+function twinData(){
+  const st=S.step,passes=[0,0,0,0,1,3,6][st],base=[0,0,0,0,35,75,100][st],all=allInds();
+  const stats=[[passes,'Drone passes'],[passes*148,'Aerial photos'],[(passes*.8).toFixed(1)+'M','3D points'],[sc.steps[st].area,'Area imaged']];
+  const rows=sc.buildings.map((b,i)=>{
+    const pct=st>=6?100:Math.max(0,base-i*6),n=st>=5?all.filter(x=>x.building===b.id).length:null;
+    const tw=pct>=100?'<em class="ok">Ready</em>':pct?`<span class="bar"><i style="width:${pct}%"></i></span>${pct}%`:'<em>Queued</em>';
+    return`<tr${st>=3?` data-plan="${b.id}" data-floor="0" title="Open building plans"`:''}><td><b>${esc(b.name)}</b></td><td>${b.floors}</td><td class="${st>=4?b.status:''}">${st>=4?DMG[b.status]||esc(b.status):'Awaiting baseline'}</td><td>${n??'–'}</td><td>${tw}</td></tr>`;
+  }).join('');
+  return`<div class="tdata"><div class="tstats">${stats.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div><table><thead><tr><th>Structure</th><th>Floors</th><th>Damage</th><th>Indications</th><th>Twin model</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
 function renderTwin(){
   const el=$('#twin');
-  if(!S.layers.l5){el.innerHTML=locked(S.step<6?'Layer 5 · Digital twin opens at step 6 · Teams join':'Turn on Layer 5 to show the digital twin');return}
+  if(!S.layers.l5){el.innerHTML=`<div class="cap"><b>Layer 5 · Digital twin</b> · <span class="lk">LOCKED</span> ${S.step<6?'opens at step 6 · Teams join · model builds as drone passes come in':'turn on Layer 5 to show the 3D model'}</div>`+twinData();return}
   const b=sc.buildings.find(b=>b.id==='cedar');
-  el.innerHTML=`<div class="cap"><b>Layer 5 · Digital twin${b?' · '+esc(b.name):''}</b> · rebuilt from drone passes · sensor indications placed in 3D</div><svg viewBox="0 -10 1000 610">${D.twin(inds())}</svg>`;
+  el.innerHTML=`<div class="cap"><b>Layer 5 · Digital twin${b?' · '+esc(b.name):''}</b> · rebuilt from drone passes · sensor indications placed in 3D</div><svg viewBox="0 -10 1000 610">${D.twin(inds())}</svg>`+twinData();
 }
 
 function renderRail(){
@@ -207,6 +218,10 @@ $('#pop').addEventListener('click',e=>{
   if(e.target.closest('[data-close]')){S.sel=null;pop();renderRail()}
   const b=e.target.closest('[data-plan]');
   if(b){S.mode='plans';S.plan={b:b.dataset.plan,f:+b.dataset.floor};S.sel=null;renderEvent();persist()}
+});
+$('#twin').addEventListener('click',e=>{
+  const r=e.target.closest('[data-plan]');
+  if(r){S.mode='plans';S.plan={b:r.dataset.plan,f:0};renderEvent();persist()}
 });
 $('#rail').addEventListener('change',e=>{
   const t=e.target;

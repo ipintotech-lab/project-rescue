@@ -238,3 +238,20 @@ body.present .narr b{font-size:18px}
 #plans svg,#twin svg{flex:1;min-height:0;height:100%}
 .alt{width:100%;aspect-ratio:auto;flex:1;min-height:320px}
 #plans svg,#twin svg{width:100%;height:100%;flex:1 1 0}
+.tdata{padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.tstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tstats div{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.tstats b{display:block;font-size:20px;color:var(--gold2)}
+.tstats span{font-size:11px;color:var(--mute)}
+.tdata table{width:100%;border-collapse:collapse;font-size:13px}
+.tdata th{text-align:left;font-size:11px;color:var(--mute);font-weight:600;padding:4px 8px;border-bottom:1px solid var(--line)}
+.tdata td{padding:5px 8px;border-bottom:1px solid var(--line)}
+.tdata tr[data-plan]{cursor:pointer}
+.tdata tbody tr[data-plan]:hover{background:var(--panel2)}
+.tdata td.collapsed{color:var(--red)}.tdata td.partial{color:var(--org)}.tdata td.damaged{color:var(--yel)}.tdata td.standing{color:var(--teal)}
+.tdata em{font-style:normal;color:var(--mute)}.tdata em.ok{color:#4ade80}
+.bar{display:inline-block;width:70px;height:6px;background:var(--panel2);border-radius:3px;margin-right:6px;vertical-align:middle;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold)}
+.lk{font-size:10px;letter-spacing:.2em;color:var(--gold);border:1px solid var(--gold);padding:1px 6px;border-radius:4px}
+#twin svg{min-height:220px}
+@media(max-width:700px){.tstats{grid-template-columns:repeat(2,1fr)}}
