@@ -319,3 +319,12 @@ body.holo{--gold:#39f59a;--gold2:#8dffc4;--line:#1d4a36;--panel:#0b1712;--panel2
 .holo #plans svg [fill="#0f0d0a"]{fill:#030805}
 .holo #plans svg [fill="#3d4234"]{fill:#0a2416;stroke:#39f59a88}
 .holo #map [stroke="#5ee0e6"]{stroke:#8dffc4}
+
+/* News photo markers: published media, linked out to the publisher. */
+.nph{cursor:pointer}
+.nph rect{fill:#e9f6ff;stroke:#000;stroke-width:1.5}
+.nph circle{fill:#1b2a36;stroke:#e9f6ff;stroke-width:1.5}
+.nph.ap rect{stroke-dasharray:3 2}
+.nph.sel rect{fill:var(--gold)}
+.nph .pl{fill:#e9f6ff;font-size:11px;font-weight:800;paint-order:stroke;stroke:#000;stroke-width:3}
+.pop a.btn{display:block;text-align:center;text-decoration:none;width:auto;margin-top:4px;padding:5px}

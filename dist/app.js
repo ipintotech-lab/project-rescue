@@ -15,7 +15,7 @@ const MY='tfa';
 const CLS={obs:'Observed',hum:'Human report',ai:'AI suggestion'};
 const EV={eo:'obs',thermal:'obs',co2:'obs',acoustic:'obs',canine:'hum',field:'hum'};
 const cls=k=>`<span class="cls ${k}">${CLS[k]}</span>`;
-const OV=[['sectors','Search sectors','Team work areas'],['hazards','Reported hazards','Human report · unverified'],['routes','Access routes','Human report · not verified safe']];
+const OV=[['photos','News photos','Published media · opens at source',4],['sectors','Search sectors','Team work areas',6],['hazards','Reported hazards','Human report · unverified',6],['routes','Access routes','Human report · not verified safe',6]];
 const SLOTS={before:'Layer 1 · pre-disaster',after:'Layer 3 · drone, top-down',drone:'Drone media · current scene'};
 const VER={unverified:'Unverified',confirmed:'Confirmed by team',superseded:'Superseded'};
 
@@ -42,7 +42,7 @@ function build(){L=D.layout(sc);art={before:D.aerial(sc,L,false,imgOf('before'))
 build();
 
 const defaults=i=>({l1:i>=3,l2:i===3,l3:i>=4,l4:i>=5,l5:i>=6});
-const S={view:'national',step:0,role:'coord',phase:'all',resolved:{},approved:false,added:[],log:[],plan:{b:'b1',f:0},holo:false,...get(KEY),mode:'map',slider:50,src:new Set(Object.keys(SRC)),p2:{score:false,imsi:false,bio:false},refresh:0,sel:null,rtext:'',present:false,focus:false,ov:{sectors:true,hazards:true,routes:true}};
+const S={view:'national',step:0,role:'coord',phase:'all',resolved:{},approved:false,added:[],log:[],plan:{b:'b1',f:0},holo:false,...get(KEY),mode:'map',slider:50,src:new Set(Object.keys(SRC)),p2:{score:false,imsi:false,bio:false},refresh:0,sel:null,rtext:'',present:false,focus:false,ov:{photos:true,sectors:true,hazards:true,routes:true}};
 S.step=Math.max(0,Math.min(sc.steps.length-1,S.step|0));
 S.layers=defaults(S.step);
 const persist=()=>put(KEY,{view:S.view,step:S.step,role:S.role,phase:S.phase,resolved:S.resolved,approved:S.approved,added:S.added,log:S.log,plan:S.plan,holo:S.holo});
@@ -128,6 +128,7 @@ function renderMap(){
   if(st>=6&&S.ov.sectors)h+=D.areas(teams());
   if(st>=6&&sc.field)h+=D.field({hazards:sc.field.hazards.filter(x=>x.step<=st),routes:sc.field.routes.filter(x=>x.step<=st)},S.ov);
   if(Ly.l4&&st>=5){const v=inds();h+=`<g class="heat">${D.heat(v.filter(i=>status(i)==='active'||status(i)==='priority'))}</g>`+v.map(pin).join('')}
+  if(st>=4&&S.ov.photos&&sc.photos)h+=D.photos(sc.photos.filter(p=>p.step<=st),S.sel);
   if(st>=6)h+=sc.conflicts.filter(c=>c.step<=st&&S.resolved[c.id]==null).map(c=>`<g class="cf" data-cf="${c.id}" transform="translate(${c.x} ${c.y})"><title>${esc(c.title)}</title><circle r="13"/><text y="6">!</text></g>`).join('');
   h+=D.p2(sc,S.p2);
   if(sc.osm&&st>=3&&(Ly.l1||Ly.l2||Ly.l3))h+=`<text class="attr" x="994" y="592" text-anchor="end">${esc(sc.osm.attribution)}</text>`;
@@ -146,11 +147,19 @@ function renderMap(){
 function setSlider(){const x=S.slider*10,r=$('#clipRect');if(!r)return;r.setAttribute('x',x);r.setAttribute('width',1000-x);$('#divider')?.setAttribute('transform',`translate(${x} 0)`)}
 
 function pop(){
-  const p=$('#pop'),i=allInds().find(i=>i.id===S.sel);
+  const p=$('#pop'),i=allInds().find(i=>i.id===S.sel),ph=sc.photos?.find(x=>x.id===S.sel);
+  if(ph&&S.mode==='map')return photoPop(p,ph);
   if(!i||S.mode!=='map'){p.hidden=true;return}
   const b=sc.buildings.find(b=>b.id===i.building),s=status(i),f=i.floor||1;
   p.innerHTML=`<button class="x" data-close aria-label="Close">×</button><div class="src ${D.lvl(i.strength)}">${SRC[i.source]} · ${esc(SRCN[i.source])}</div><p>${esc(i.note)}</p><dl><dt>Evidence</dt><dd>${cls(EV[i.source])}</dd><dt>Time</dt><dd>${esc(i.time)}</dd><dt>Strength</dt><dd>${Math.round(i.strength*100)}%</dd><dt>Source team</dt><dd>${esc(team(i.team)?.name)}</dd>${b?`<dt>Location</dt><dd>${esc(b.name)} · floor ${f}</dd>`:''}${s!=='active'?`<dt>Status</dt><dd class="stt">${s}</dd>`:''}</dl>${b?`<button class="btn" data-plan="${b.id}" data-floor="${f}">Open building plans · floor ${f}</button>`:''}`;
   p.style.left=Math.min(i.x/10,68)+'%';p.style.top=Math.min(i.y/6,52)+'%';p.hidden=false;
+}
+
+// Published news media: linked to the publisher, never copied into the site.
+function photoPop(p,ph){
+  const b=sc.buildings.find(b=>b.id===ph.building);
+  p.innerHTML=`<button class="x" data-close aria-label="Close">×</button><div class="src">${esc(ph.kind)} · published</div><p>${esc(ph.title)}</p><dl><dt>Evidence</dt><dd>Published media · not verified by teams</dd><dt>Source</dt><dd>${esc(ph.outlet)}</dd><dt>Credit</dt><dd>${esc(ph.credit)}</dd><dt>Date</dt><dd>${esc(ph.date)}</dd><dt>Location</dt><dd>${b?esc(b.name)+' · ':''}${esc(ph.place)}</dd></dl><a class="btn" href="${esc(ph.url)}" target="_blank" rel="noopener">Open at source ↗</a>`;
+  p.style.left=Math.min(ph.x/10,68)+'%';p.style.top=Math.min(ph.y/6,30)+'%';p.hidden=false;
 }
 
 function planCtl(){
@@ -231,7 +240,7 @@ function renderDrone(){
 function renderRail(){
   const st=S.step,v=inds();
   let h='<h3>Layers</h3>'+LAYERS.map(([k,n,name,sub,from])=>{const lock=st<from;return`<label class="ly${lock?' lock':''}"><input type="checkbox" data-layer="${k}"${S.layers[k]?' checked':''}${lock?' disabled':''}><i>${n}</i><span><b>${name}</b><small>${lock?'Available from step '+from:sub}</small></span></label>`}).join('');
-  h+=`<h3>Overlays <em>${st<6?'from step 6':'human reports'}</em></h3>`+OV.map(([k,name,sub])=>{const lock=st<6;return`<label class="ly${lock?' lock':''}"><input type="checkbox" data-ov="${k}"${S.ov[k]?' checked':''}${lock?' disabled':''}><i>${k[0].toUpperCase()}</i><span><b>${name}</b><small>${sub}</small></span></label>`}).join('');
+  h+=`<h3>Overlays <em>${st<4?'from step 4':'reports · media'}</em></h3>`+OV.map(([k,name,sub,from])=>{const lock=st<from;return`<label class="ly${lock?' lock':''}"><input type="checkbox" data-ov="${k}"${S.ov[k]?' checked':''}${lock?' disabled':''}><i>${k[0].toUpperCase()}</i><span><b>${name}</b><small>${lock?'Available from step '+from:sub}</small></span></label>`}).join('');
   h+=`<h3>Evidence</h3><ul class="ev"><li>${cls('obs')}<span>Sensor or imagery · EO, TH, CO₂, AC, damage outlines</span></li><li>${cls('hum')}<span>Teams on the ground · K9, FR, hazards, routes</span></li><li>${cls('ai')}<span>Computed, unverified · search priority, P2 score</span></li></ul>`;
   h+='<h3>Phase 2 preview <em>not in Phase 1</em></h3>'+P2.map(([k,name,sub])=>`<label class="ly p2"><input type="checkbox" data-p2="${k}"${S.p2[k]?' checked':''}><i>P2</i><span><b>${name}</b><small>${sub}</small></span></label>`).join('');
   h+=`<h3>Sources</h3><div class="chips">${Object.entries(SRC).map(([k,c])=>`<button data-src="${k}" class="${S.src.has(k)?'on':''}" title="${SRCN[k]}">${c}</button>`).join('')}</div>`;

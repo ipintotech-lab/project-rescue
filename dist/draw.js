@@ -155,6 +155,9 @@ export function field(f,on){
   return o;
 }
 
+// Published news photos: a camera marker per photo; dashed when the location is approximate.
+export const photos=(list,sel)=>list.map(p=>`<g class="nph${p.approx?' ap':''}${sel===p.id?' sel':''}" data-id="${p.id}" transform="translate(${p.x} ${p.y})"><title>${esc(p.kind)} · ${esc(p.outlet)} · opens at source</title><rect x="-13" y="-10" width="26" height="20" rx="4"/><rect x="-5" y="-14" width="10" height="5" rx="1"/><circle r="5.5"/><text class="pl" x="18" y="4">${esc(p.label)}${p.approx?' · APPROX.':''}</text></g>`).join('');
+
 export const heat=inds=>inds.map(i=>`<circle cx="${i.x}" cy="${i.y}" r="${f1(28+60*i.strength)}" fill="url(#hot)" opacity="${f1(.3+.6*i.strength)}"/>`).join('');
 
 export function p2(sc,on){
