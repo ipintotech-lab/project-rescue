@@ -24,7 +24,7 @@
     {"id":"b6","name":"B6 · Montecarlo apartments","floors":6,"x":705.9,"y":236.5,"w":33.1,"h":34.5,"status":"standing","score":"0.12 · Low","sv":{"lat":10.618132,"lon":-66.849512,"heading":179},"pts":[[706.1,236.5],[705.9,270.8],[738.7,271.0],[739.0,236.8]]}
   ],
   "teams": [
-    {"id": "fl", "name": "First Light Unit MIA-1", "type": "Drone unit · aerial over the whole event", "color": "#d4a52a", "joins": 2, "area": null},
+    {"id": "fl", "name": "SARA Unit MIA-1", "type": "Drone unit · aerial over the whole event", "color": "#d4a52a", "joins": 2, "area": null},
     {"id": "tfa", "name": "USAR Task Force A", "type": "Accredited SAR team", "color": "#3ccfcf", "joins": 6, "area": [430, 258, 140, 55]},
     {"id": "tfb", "name": "Local Rescue Team B", "type": "Accredited SAR team", "color": "#ff7b54", "joins": 6, "area": [325, 318, 240, 112]},
     {"id": "k9", "name": "Canine Unit K9-3", "type": "Accredited canine team", "color": "#b88cff", "joins": 6, "area": [605, 265, 95, 72]},

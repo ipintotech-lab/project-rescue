@@ -256,7 +256,7 @@ export function plans(sc,L,b,inds,focus){
   o.push(...top);
   const[gx,gy]=Q(B.x,B.y+B.h,0);
   o.push(`<text x="${f1(gx-14)}" y="${f1(gy+4)}" fill="#f0c75a" font-size="12" font-weight="700" font-family="sans-serif" text-anchor="end" paint-order="stroke" stroke="#000" stroke-width="3">STREET LEVEL</text>`);
-  o.push(`<text x="${vx+16}" y="${f1(H-14)}" fill="#a1978a" font-size="12" font-family="sans-serif">${esc(b.name)} · ${F} floors · pre-event plans (simulated) · First Light demo</text>`);
+  o.push(`<text x="${vx+16}" y="${f1(H-14)}" fill="#a1978a" font-size="12" font-family="sans-serif">${esc(b.name)} · ${F} floors · pre-event plans (simulated) · SARA demo</text>`);
   if(sc.osm)o.push(`<text x="${vx+16}" y="${f1(H-32)}" fill="#a1978a" font-size="11" font-family="sans-serif">${esc(sc.osm.attribution)}</text>`);
   return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vx} ${vy} ${vw} ${vh}">${o.join('')}</svg>`;
 }

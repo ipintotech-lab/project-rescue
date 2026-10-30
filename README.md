@@ -1,7 +1,7 @@
 # project-rescue
 Rescue map and cordoned rescue teams
 
-## First Light mock (presentation demo)
+## SARA mock (presentation demo)
 
 A simulated, offline demo of the SAR Multi-Team Platform. Run it with `npm start`, then open http://localhost:3000.
 
